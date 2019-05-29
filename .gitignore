@@ -1,0 +1,46 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+OpcUa_Java_API.VC.db
+OpcUa_Java_API.VC.VC.opendb
+*.log
+*.tlog
+*.pdb
+*.iobj
+*.ipdb
+.vs/*
+Release/*
+opcua_java_api/Release
+opcua_java_api/swig
+*.user
+*.filters
+*.exp
