@@ -14,9 +14,23 @@ first build and bug fixes
 
 ### BUILD
 
-Using visual studio 2015 open .sln
+The repository can be built either by Cmake using the `CMakeLists.txt` in the root or by compiling and installing each library separately using visual studio 2015.
 
-### Java Code example 
+
+### Cmake build
+
+```bash
+mkdir build
+cd build 
+cmake .. -DCMAKE_BUILD_TYPE=Release 
+cmake --build .
+```
+
+Note: with the Cmake build the dependencies are searched for inside OpcUa directory if it is not found a git clone to dependcies -'mbedtls-2.16' is performed and linked automaticaly.
+
+On the other hand, Using visual studio 2015 open .sln however make sure you have the dependcies compiled and listed inside OpcUa directory accordingly.
+
+### Java usage code example 
 
 ```bash
 SWIGTYPE_p_bool running = open62541.UA_Boolean_new() ;
