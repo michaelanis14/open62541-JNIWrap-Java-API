@@ -45,3 +45,4 @@ opcua_java_api/swig
 *.filters
 *.exp
 opcua_java_api/opcua_java_api.vcxproj
+opcua_java_api/opcua_java_api.vcxproj
