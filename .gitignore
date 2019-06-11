@@ -44,3 +44,4 @@ opcua_java_api/swig
 *.user
 *.filters
 *.exp
+opcua_java_api/opcua_java_api.vcxproj
