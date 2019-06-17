@@ -6,10 +6,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
-	
-	void set_UABoolean(UA_Boolean* flag) {
-		flag = true;
-	}
+
+
 
 	static volatile UA_Boolean running = true;
 	static void stopHandler(int sig) {

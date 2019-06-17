@@ -114,7 +114,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Java\jdk1.8.0_211\include;C:\Program Files %28x86%29\Java\jdk1.8.0_211\include\win32;$(SolutionDir)\OpcUa\OpcUa_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
@@ -147,10 +147,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_helper.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.h" />
     <ClInclude Include="open62541.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.c" />
+    <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.cxx" />
     <ClCompile Include="open62541.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
