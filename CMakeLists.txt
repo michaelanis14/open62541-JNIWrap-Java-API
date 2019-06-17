@@ -102,6 +102,7 @@ endif(NOT MSVC)
 
 file(GLOB SRC_FILES
     ${CPP_DIR_1}/*.c
+	${CPP_DIR_1}/*.cxx
     ${HEADER_DIR_1}/*.h
 )
 
