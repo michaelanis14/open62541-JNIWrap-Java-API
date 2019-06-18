@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.cxx" />
     <ClCompile Include="open62541.c" />
+    <ClCompile Include="open62541_helper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
