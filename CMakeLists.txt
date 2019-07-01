@@ -26,7 +26,7 @@ set(MBEDX_LIBRARY mbedx509)
 #        The main options of project        #
 #############################################
 
-project(${PROJECT_NAME} C)
+project(${PROJECT_NAME} C CXX)
 find_package (Java REQUIRED)
 find_package (JNI REQUIRED)
 include (UseJava)
@@ -102,7 +102,8 @@ endif(NOT MSVC)
 
 file(GLOB SRC_FILES
     ${CPP_DIR_1}/*.c
-	${CPP_DIR_1}/*.cxx
+    ${CPP_DIR_1}/*.cpp
+    ${CPP_DIR_1}/*.cxx
     ${HEADER_DIR_1}/*.h
 )
 
