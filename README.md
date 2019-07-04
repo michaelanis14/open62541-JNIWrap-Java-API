@@ -1,9 +1,11 @@
-# OpcUa_Java_API
+# OPCUA Java Wrapper
 
-This is a JNI Wrap for a helper C classes over the source of open62541 to enable direct Java comunication.
+This is a JNI Wrap for a helper C class(s) over the source of open62541 to enable direct Java comunication.
 The JNI Wrap is generated using SWIG library.
 
 This approach was a bit cleaner for the mapping, for using the nessecary functions or even bulding custome ones and just calling them from the Java side. Thus you can refrence any functions in the c helper class or even add other classes and the cmakelist will include them autmaticaly in the build.
+
+However one can still wrap the whole open6245 C library source, but this approach is not recommended.
 
 ### STATE
 
