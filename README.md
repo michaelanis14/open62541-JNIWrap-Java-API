@@ -9,8 +9,9 @@ This approach was a bit cleaner for the mapping, thus using the nessecary functi
 
 first build and bug fixes
 ### TODO
-*let the cmakelist generate the java classes duing the build
-*package the generated java classes into a single jar
+- [ ] let the cmakelist generate the java classes duing the build.
+- [ ] package the generated java classes into a single jar.
+- [ ] Add more generaric methods in the helper classes ex. init a server with custome port and ip.
 
 ### PREREQUISITES
 
