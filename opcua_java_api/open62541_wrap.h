@@ -16,7 +16,7 @@ class SwigDirector_ServerAPIBase : public ServerAPIBase, public Swig::Director {
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
     SwigDirector_ServerAPIBase(JNIEnv *jenv);
-    virtual void monitored_itemChanged(UA_NodeId const *nodeId, UA_DataValue const *value);
+    virtual void monitored_itemChanged(UA_NodeId const *nodeId, UA_Int32 const value);
     virtual ~SwigDirector_ServerAPIBase();
 public:
     bool swig_overrides(int n) {

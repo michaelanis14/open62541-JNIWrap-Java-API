@@ -10,11 +10,13 @@ ServerAPIBase *jAPIBase_local;
 		const UA_DataValue *value) {
 
 		// ServerAPIBase::Get()->monitored_itemChanged(nodeId, value);
-		jAPIBase_local->monitored_itemChanged(nodeId, value);
+		
+		jAPIBase_local->monitored_itemChanged(nodeId, *(UA_Int32*)value->value.data);
+		
 		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server Received Notification on Monitored Item ");
 	}
 
-	void ServerAPIBase::addMonitoredItemToCurrentTimeVariable(ServerAPIBase *jAPIBase, UA_Server *server, UA_NodeId immId) {
+	void ServerAPIBase::addMonitoredItem(ServerAPIBase *jAPIBase, UA_Server *server, UA_NodeId immId) {
 		UA_MonitoredItemCreateRequest monRequest =
 			UA_MonitoredItemCreateRequest_default(immId);
 		jAPIBase_local = jAPIBase;

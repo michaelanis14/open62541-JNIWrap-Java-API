@@ -765,12 +765,12 @@ namespace Swig {
 SwigDirector_ServerAPIBase::SwigDirector_ServerAPIBase(JNIEnv *jenv) : ServerAPIBase(), Swig::Director(jenv) {
 }
 
-void SwigDirector_ServerAPIBase::monitored_itemChanged(UA_NodeId const *nodeId, UA_DataValue const *value) {
+void SwigDirector_ServerAPIBase::monitored_itemChanged(UA_NodeId const *nodeId, UA_Int32 const value) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   jlong jnodeId = 0 ;
-  jlong jvalue = 0 ;
+  jint jvalue  ;
   
   if (!swig_override[0]) {
     ServerAPIBase::monitored_itemChanged(nodeId,value);
@@ -779,7 +779,7 @@ void SwigDirector_ServerAPIBase::monitored_itemChanged(UA_NodeId const *nodeId, 
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     *((UA_NodeId **)&jnodeId) = (UA_NodeId *) nodeId; 
-    *((UA_DataValue **)&jvalue) = (UA_DataValue *) value; 
+    jvalue = (jint) value;
     jenv->CallStaticVoidMethod(Swig::jclass_open62541JNI, Swig::director_method_ids[0], swigjobj, jnodeId, jvalue);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
@@ -804,7 +804,7 @@ void SwigDirector_ServerAPIBase::swig_connect_director(JNIEnv *jenv, jobject jse
     jmethodID base_methid;
   } methods[] = {
     {
-      "monitored_itemChanged", "(LUA_NodeId;LUA_DataValue;)V", NULL 
+      "monitored_itemChanged", "(Lopen62Wrap/UA_NodeId;I)V", NULL 
     }
   };
   
@@ -812,7 +812,7 @@ void SwigDirector_ServerAPIBase::swig_connect_director(JNIEnv *jenv, jobject jse
   
   if (swig_set_self(jenv, jself, swig_mem_own, weak_global)) {
     if (!baseclass) {
-      baseclass = jenv->FindClass("ServerAPIBase");
+      baseclass = jenv->FindClass("open62Wrap/ServerAPIBase");
       if (!baseclass) return;
       baseclass = (jclass) jenv->NewGlobalRef(baseclass);
     }
@@ -838,7 +838,7 @@ void SwigDirector_ServerAPIBase::swig_connect_director(JNIEnv *jenv, jobject jse
 extern "C" {
 #endif
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1stopHandler(JNIEnv *jenv, jclass jcls, jint jarg1) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1stopHandler(JNIEnv *jenv, jclass jcls, jint jarg1) {
   int arg1 ;
   
   (void)jenv;
@@ -848,7 +848,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1stopHandler(JNIEnv *jen
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1createServerDefaultConfig(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1createServerDefaultConfig(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *result = 0 ;
@@ -863,7 +863,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1createServerDefaultCon
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1runServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1runServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   jlong jresult = 0 ;
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *arg2 = (UA_Server *) 0 ;
@@ -880,7 +880,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1runServer(JNIEnv *jenv
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1addMonitoredItemToCurrentTimeVariable(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jlong jarg4, jobject jarg4_) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addMonitoredItem(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jlong jarg4, jobject jarg4_) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   ServerAPIBase *arg2 = (ServerAPIBase *) 0 ;
   UA_Server *arg3 = (UA_Server *) 0 ;
@@ -901,11 +901,11 @@ SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1addMonitoredItemToCurre
     return ;
   }
   arg4 = *argp4; 
-  (arg1)->addMonitoredItemToCurrentTimeVariable(arg2,arg3,arg4);
+  (arg1)->addMonitoredItem(arg2,arg3,arg4);
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1manuallyDefineIMM(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1manuallyDefineIMM(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   jlong jresult = 0 ;
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *arg2 = (UA_Server *) 0 ;
@@ -922,7 +922,24 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_ServerAPIBase_1manuallyDefineIMM(JNIE
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1writeVariable(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_, jint jarg4) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1manuallyDefineRobot(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jlong jresult = 0 ;
+  ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
+  UA_Server *arg2 = (UA_Server *) 0 ;
+  UA_NodeId result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ServerAPIBase **)&jarg1; 
+  arg2 = *(UA_Server **)&jarg2; 
+  result = (arg1)->manuallyDefineRobot(arg2);
+  *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1writeVariable(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_, jint jarg4) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *arg2 = (UA_Server *) 0 ;
   UA_NodeId *arg3 = (UA_NodeId *) 0 ;
@@ -940,41 +957,39 @@ SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1writeVariable(JNIEnv *j
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1monitored_1itemChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1monitored_1itemChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_NodeId *arg2 = (UA_NodeId *) 0 ;
-  UA_DataValue *arg3 = (UA_DataValue *) 0 ;
+  UA_Int32 arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  (void)jarg3_;
   arg1 = *(ServerAPIBase **)&jarg1; 
   arg2 = *(UA_NodeId **)&jarg2; 
-  arg3 = *(UA_DataValue **)&jarg3; 
-  (arg1)->monitored_itemChanged((UA_NodeId const *)arg2,(UA_DataValue const *)arg3);
+  arg3 = (UA_Int32)jarg3; 
+  (arg1)->monitored_itemChanged((UA_NodeId const *)arg2,arg3);
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1monitored_1itemChangedSwigExplicitServerAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1monitored_1itemChangedSwigExplicitServerAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_NodeId *arg2 = (UA_NodeId *) 0 ;
-  UA_DataValue *arg3 = (UA_DataValue *) 0 ;
+  UA_Int32 arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  (void)jarg3_;
   arg1 = *(ServerAPIBase **)&jarg1; 
   arg2 = *(UA_NodeId **)&jarg2; 
-  arg3 = *(UA_DataValue **)&jarg3; 
-  (arg1)->ServerAPIBase::monitored_itemChanged((UA_NodeId const *)arg2,(UA_DataValue const *)arg3);
+  arg3 = (UA_Int32)jarg3; 
+  (arg1)->ServerAPIBase::monitored_itemChanged((UA_NodeId const *)arg2,arg3);
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_delete_1ServerAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1ServerAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   
   (void)jenv;
@@ -984,7 +999,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_delete_1ServerAPIBase(JNIEnv *jenv, jc
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1ServerAPIBase(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1ServerAPIBase(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   ServerAPIBase *result = 0 ;
   
@@ -996,7 +1011,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1ServerAPIBase(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
   ServerAPIBase *obj = *((ServerAPIBase **)&objarg);
   (void)jcls;
   SwigDirector_ServerAPIBase *director = static_cast<SwigDirector_ServerAPIBase *>(obj);
@@ -1004,7 +1019,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1director_1connect(JNIEn
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
   ServerAPIBase *obj = *((ServerAPIBase **)&objarg);
   SwigDirector_ServerAPIBase *director = dynamic_cast<SwigDirector_ServerAPIBase *>(obj);
   (void)jcls;
@@ -1014,7 +1029,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_ServerAPIBase_1change_1ownership(JNIEn
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1ClientAPIBase(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1ClientAPIBase(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   ClientAPIBase *result = 0 ;
   
@@ -1026,7 +1041,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1ClientAPIBase(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1NUMERIC_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NODEIDTYPE_1NUMERIC_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   UA_NodeIdType result;
   
@@ -1038,7 +1053,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1NUMERIC_1get(JNIEnv *j
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1STRING_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NODEIDTYPE_1STRING_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   UA_NodeIdType result;
   
@@ -1050,7 +1065,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1STRING_1get(JNIEnv *je
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1GUID_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NODEIDTYPE_1GUID_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   UA_NodeIdType result;
   
@@ -1062,7 +1077,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1GUID_1get(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1BYTESTRING_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NODEIDTYPE_1BYTESTRING_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   UA_NodeIdType result;
   
@@ -1074,7 +1089,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NODEIDTYPE_1BYTESTRING_1get(JNIEnv
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1NodeId_1namespaceIndex_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1namespaceIndex_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   UA_UInt16 arg2 ;
   
@@ -1087,7 +1102,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1NodeId_1namespaceIndex_1set(JNIEnv
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NodeId_1namespaceIndex_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1namespaceIndex_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   UA_UInt16 result;
@@ -1102,7 +1117,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NodeId_1namespaceIndex_1get(JNIEnv
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1NodeId_1identifierType_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1identifierType_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   enum UA_NodeIdType arg2 ;
   
@@ -1115,7 +1130,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1NodeId_1identifierType_1set(JNIEnv
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NodeId_1identifierType_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1identifierType_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   enum UA_NodeIdType result;
@@ -1130,7 +1145,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1NodeId_1identifierType_1get(JNIEnv
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1UA_1NodeId(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1UA_1NodeId(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   UA_NodeId *result = 0 ;
   
@@ -1142,7 +1157,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1UA_1NodeId(JNIEnv *jenv, jclass 
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_delete_1UA_1NodeId(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1UA_1NodeId(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   
   (void)jenv;
@@ -1152,7 +1167,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_delete_1UA_1NodeId(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1value_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1value_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Variant arg2 ;
   UA_Variant *argp2 ;
@@ -1171,7 +1186,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1value_1set(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1value_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1value_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Variant result;
@@ -1186,7 +1201,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1value_1get(JNIEnv *jen
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1sourceTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1sourceTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_DateTime arg2 ;
   UA_DateTime *argp2 ;
@@ -1205,7 +1220,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1sourceTimestamp_1set(JN
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1sourceTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1sourceTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_DateTime result;
@@ -1220,7 +1235,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1sourceTimestamp_1get(J
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1serverTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1serverTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_DateTime arg2 ;
   UA_DateTime *argp2 ;
@@ -1239,7 +1254,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1serverTimestamp_1set(JN
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1serverTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1serverTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_DateTime result;
@@ -1254,7 +1269,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_UA_1DataValue_1serverTimestamp_1get(J
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1sourcePicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1sourcePicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_UInt16 arg2 ;
   
@@ -1267,7 +1282,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1sourcePicoseconds_1set(
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1sourcePicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1sourcePicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_UInt16 result;
@@ -1282,7 +1297,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1sourcePicoseconds_1get(
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1serverPicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1serverPicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_UInt16 arg2 ;
   
@@ -1295,7 +1310,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1serverPicoseconds_1set(
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1serverPicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1serverPicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_UInt16 result;
@@ -1310,7 +1325,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1serverPicoseconds_1get(
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1status_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1status_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_StatusCode arg2 ;
   
@@ -1323,7 +1338,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1status_1set(JNIEnv *jen
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1status_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1status_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_StatusCode result;
@@ -1338,7 +1353,7 @@ SWIGEXPORT jint JNICALL Java_open62541JNI_UA_1DataValue_1status_1get(JNIEnv *jen
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasValue_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasValue_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1351,7 +1366,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasValue_1set(JNIEnv *j
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasValue_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasValue_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1366,7 +1381,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasValue_1get(JNIEn
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasStatus_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasStatus_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1379,7 +1394,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasStatus_1set(JNIEnv *
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasStatus_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasStatus_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1394,7 +1409,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasStatus_1get(JNIE
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasSourceTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasSourceTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1407,7 +1422,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasSourceTimestamp_1set
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasSourceTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasSourceTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1422,7 +1437,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasSourceTimestamp_
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasServerTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasServerTimestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1435,7 +1450,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasServerTimestamp_1set
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasServerTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasServerTimestamp_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1450,7 +1465,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasServerTimestamp_
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasSourcePicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasSourcePicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1463,7 +1478,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasSourcePicoseconds_1s
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasSourcePicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasSourcePicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1478,7 +1493,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasSourcePicosecond
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasServerPicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasServerPicoseconds_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean arg2 ;
   
@@ -1491,7 +1506,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_UA_1DataValue_1hasServerPicoseconds_1s
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasServerPicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_UA_1DataValue_1hasServerPicoseconds_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   UA_Boolean result;
@@ -1506,7 +1521,7 @@ SWIGEXPORT jboolean JNICALL Java_open62541JNI_UA_1DataValue_1hasServerPicosecond
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1UA_1DataValue(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1UA_1DataValue(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   UA_DataValue *result = 0 ;
   
@@ -1518,7 +1533,7 @@ SWIGEXPORT jlong JNICALL Java_open62541JNI_new_1UA_1DataValue(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_delete_1UA_1DataValue(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1UA_1DataValue(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   UA_DataValue *arg1 = (UA_DataValue *) 0 ;
   
   (void)jenv;
@@ -1528,7 +1543,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_delete_1UA_1DataValue(JNIEnv *jenv, jc
 }
 
 
-SWIGEXPORT void JNICALL Java_open62541JNI_swig_1module_1init(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_swig_1module_1init(JNIEnv *jenv, jclass jcls) {
   int i;
   
   static struct {
@@ -1536,7 +1551,7 @@ SWIGEXPORT void JNICALL Java_open62541JNI_swig_1module_1init(JNIEnv *jenv, jclas
     const char *signature;
   } methods[1] = {
     {
-      "SwigDirector_ServerAPIBase_monitored_itemChanged", "(LServerAPIBase;JJ)V" 
+      "SwigDirector_ServerAPIBase_monitored_itemChanged", "(Lopen62Wrap/ServerAPIBase;JI)V" 
     }
   };
   Swig::jclass_open62541JNI = (jclass) jenv->NewGlobalRef(jcls);
