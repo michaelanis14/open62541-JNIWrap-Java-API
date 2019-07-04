@@ -3,12 +3,14 @@
 This is a JNI Wrap for a helper C classes over the source of open62541 to enable direct Java comunication.
 The JNI Wrap is generated using SWIG library.
 
-This approach was a bit cleaner for the mapping, thus using the nessecary functions and even bulding custome ones and just calling them from the Java side. Thus you can add any nessecary functions in the c helper class or even add other classes with the same project directory and the cmakelist will include them autmaticaly in the build.
+This approach was a bit cleaner for the mapping, for using the nessecary functions or even bulding custome ones and just calling them from the Java side. Thus you can refrence any functions in the c helper class or even add other classes and the cmakelist will include them autmaticaly in the build.
 
 ### STATE
 
-first build and bug fixes
+first build and bug fixes.
+
 ### TODO
+
 - [ ] let the cmakelist generate the java classes duing the build.
 - [ ] package the generated java classes into a single jar.
 - [ ] Add more generaric methods in the helper classes ex. init a server with custome port and ip.
