@@ -1,11 +1,16 @@
 # OpcUa_Java_API
 
-This is a JNI Wrap for the C source for open62541 to enable direct Java comunication.
-The JNI Wrap is generated using SWIG library
+This is a JNI Wrap for a helper C classes over the source of open62541 to enable direct Java comunication.
+The JNI Wrap is generated using SWIG library.
+
+This approach was a bit cleaner for the mapping, thus using the nessecary functions and even bulding custome ones and just calling them from the Java side. Thus you can add any nessecary functions in the c helper class or even add other classes with the same project directory and the cmakelist will include them autmaticaly in the build.
 
 ### STATE
 
 first build and bug fixes
+### TODO
+*let the cmakelist generate the java classes duing the build
+*package the generated java classes into a single jar
 
 ### PREREQUISITES
 
@@ -33,9 +38,8 @@ On the other hand, Using visual studio 2015 open .sln however make sure you have
 ### Java usage code example 
 
 ```bash
-SWIGTYPE_p_bool running = open62541.UA_Boolean_new() ;
-SWIGTYPE_p_UA_Server server = open62541.UA_Server_new();
-open62541.UA_ServerConfig_setDefault(open62541.UA_Server_getConfig(server));
-SWIGTYPE_p_uint32_t retval = open62541.UA_Server_run_startup(server);
-open62541.UA_Server_delete(server);
+  ServerAPIBase	serverAPI = new ServerAPIBase();
+	SWIGTYPE_p_UA_Servers erver = serverAPI.createServerDefaultConfig();
+	UA_NodeId	statusNodeID = serverAPI.manuallyDefineIMM(server);
+	serverAPI.addMonitoredItem(new MoldingMachine_OPCUA(), server, statusNodeID);
 ```
