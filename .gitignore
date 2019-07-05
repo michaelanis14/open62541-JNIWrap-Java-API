@@ -47,3 +47,4 @@ opcua_java_api/swig
 opcua_java_api/opcua_java_api.vcxproj
 opcua_java_api/opcua_java_api.vcxproj
 *.vcxproj
+*.vcxproj
