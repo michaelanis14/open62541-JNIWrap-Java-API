@@ -9,8 +9,11 @@
 class ServerAPIBase {
 
 private:
-	
+	static ServerAPIBase *jAPIBase_local;
 public:
+
+	static ServerAPIBase * Get();
+
 	static void stopHandler(int sig) {
 		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "received ctrl-c");
 		

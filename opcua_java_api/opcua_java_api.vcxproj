@@ -146,12 +146,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_helper.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\build\swing\client_api_base.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\build\swing\server_api_base.h" />
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.h" />
     <ClInclude Include="open62541.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_helper.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\build\swing\client_api_base.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\build\swing\server_api_base.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.cxx" />
     <ClCompile Include="open62541.c" />
   </ItemGroup>

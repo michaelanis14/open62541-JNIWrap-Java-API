@@ -2,7 +2,9 @@
 
 
 
-ServerAPIBase *jAPIBase_local;
+
+
+ServerAPIBase * ServerAPIBase::jAPIBase_local = 0;
 
 	static void dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
 		void *monitoredItemContext, const UA_NodeId *nodeId,
@@ -11,9 +13,24 @@ ServerAPIBase *jAPIBase_local;
 
 		// ServerAPIBase::Get()->monitored_itemChanged(nodeId, value);
 		
-		jAPIBase_local->monitored_itemChanged(nodeId, *(UA_Int32*)value->value.data);
+		ServerAPIBase::Get()->monitored_itemChanged(nodeId, *(UA_Int32*)value->value.data);
 		
 		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server Received Notification on Monitored Item ");
+	}
+
+	/**
+	* Method:    Get
+	* FullName:  Get
+	* Access:    public
+	* * @return   ServerAPIBase
+	*/
+	ServerAPIBase * ServerAPIBase::Get()
+	{
+		if (jAPIBase_local == 0) {
+			jAPIBase_local = new ServerAPIBase();
+		}
+
+		return jAPIBase_local;
 	}
 
 	void ServerAPIBase::addMonitoredItem(ServerAPIBase *jAPIBase, UA_Server *server, UA_NodeId immId) {

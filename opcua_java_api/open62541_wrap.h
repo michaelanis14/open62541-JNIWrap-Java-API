@@ -26,5 +26,21 @@ protected:
     Swig::BoolArray<1> swig_override;
 };
 
+class SwigDirector_ClientAPIBase : public ClientAPIBase, public Swig::Director {
+
+public:
+    void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
+    SwigDirector_ClientAPIBase(JNIEnv *jenv);
+    virtual void monitored_itemChanged(UA_NodeId nodeId, UA_Int32 const value);
+    virtual void clientConnected(ClientAPIBase *jClientAPIBase, UA_Client *client, char *serverUrl);
+    virtual ~SwigDirector_ClientAPIBase();
+public:
+    bool swig_overrides(int n) {
+      return (n < 2 ? swig_override[n] : false);
+    }
+protected:
+    Swig::BoolArray<2> swig_override;
+};
+
 
 #endif

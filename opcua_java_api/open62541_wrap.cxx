@@ -744,7 +744,7 @@ namespace Swig {
 namespace Swig {
   namespace {
     jclass jclass_open62541JNI = NULL;
-    jmethodID director_method_ids[1];
+    jmethodID director_method_ids[3];
   }
 }
 
@@ -834,10 +834,131 @@ void SwigDirector_ServerAPIBase::swig_connect_director(JNIEnv *jenv, jobject jse
 }
 
 
+SwigDirector_ClientAPIBase::SwigDirector_ClientAPIBase(JNIEnv *jenv) : ClientAPIBase(), Swig::Director(jenv) {
+}
+
+void SwigDirector_ClientAPIBase::monitored_itemChanged(UA_NodeId nodeId, UA_Int32 const value) {
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  jlong jnodeId  ;
+  jint jvalue  ;
+  
+  if (!swig_override[0]) {
+    ClientAPIBase::monitored_itemChanged(nodeId,value);
+    return;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jnodeId = 0;
+    *((UA_NodeId **)&jnodeId) = new UA_NodeId((const UA_NodeId &)nodeId); 
+    jvalue = (jint) value;
+    jenv->CallStaticVoidMethod(Swig::jclass_open62541JNI, Swig::director_method_ids[1], swigjobj, jnodeId, jvalue);
+    jthrowable swigerror = jenv->ExceptionOccurred();
+    if (swigerror) {
+      Swig::DirectorException::raise(jenv, swigerror);
+    }
+    
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in ClientAPIBase::monitored_itemChanged ");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
+void SwigDirector_ClientAPIBase::clientConnected(ClientAPIBase *jClientAPIBase, UA_Client *client, char *serverUrl) {
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  jlong jjClientAPIBase = 0 ;
+  jlong jclient = 0 ;
+  jstring jserverUrl = 0 ;
+  
+  if (!swig_override[1]) {
+    ClientAPIBase::clientConnected(jClientAPIBase,client,serverUrl);
+    return;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    *((ClientAPIBase **)&jjClientAPIBase) = (ClientAPIBase *) jClientAPIBase; 
+    *((UA_Client **)&jclient) = (UA_Client *) client; 
+    jserverUrl = 0;
+    if (serverUrl) {
+      jserverUrl = jenv->NewStringUTF((const char *)serverUrl);
+      if (!jserverUrl) return ;
+    }
+    Swig::LocalRefGuard serverUrl_refguard(jenv, jserverUrl);
+    jenv->CallStaticVoidMethod(Swig::jclass_open62541JNI, Swig::director_method_ids[2], swigjobj, jjClientAPIBase, jclient, jserverUrl);
+    jthrowable swigerror = jenv->ExceptionOccurred();
+    if (swigerror) {
+      Swig::DirectorException::raise(jenv, swigerror);
+    }
+    
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in ClientAPIBase::clientConnected ");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
+SwigDirector_ClientAPIBase::~SwigDirector_ClientAPIBase() {
+  swig_disconnect_director_self("swigDirectorDisconnect");
+}
+
+
+void SwigDirector_ClientAPIBase::swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global) {
+  static struct {
+    const char *mname;
+    const char *mdesc;
+    jmethodID base_methid;
+  } methods[] = {
+    {
+      "monitored_itemChanged", "(Lopen62Wrap/UA_NodeId;I)V", NULL 
+    },
+    {
+      "clientConnected", "(Lopen62Wrap/ClientAPIBase;Lopen62Wrap/SWIGTYPE_p_UA_Client;Ljava/lang/String;)V", NULL 
+    }
+  };
+  
+  static jclass baseclass = 0 ;
+  
+  if (swig_set_self(jenv, jself, swig_mem_own, weak_global)) {
+    if (!baseclass) {
+      baseclass = jenv->FindClass("open62Wrap/ClientAPIBase");
+      if (!baseclass) return;
+      baseclass = (jclass) jenv->NewGlobalRef(baseclass);
+    }
+    bool derived = (jenv->IsSameObject(baseclass, jcls) ? false : true);
+    for (int i = 0; i < 2; ++i) {
+      if (!methods[i].base_methid) {
+        methods[i].base_methid = jenv->GetMethodID(baseclass, methods[i].mname, methods[i].mdesc);
+        if (!methods[i].base_methid) return;
+      }
+      swig_override[i] = false;
+      if (derived) {
+        jmethodID methid = jenv->GetMethodID(jcls, methods[i].mname, methods[i].mdesc);
+        swig_override[i] = (methid != methods[i].base_methid);
+        jenv->ExceptionClear();
+      }
+    }
+  }
+}
+
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1Get(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  ServerAPIBase *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (ServerAPIBase *)ServerAPIBase::Get();
+  *(ServerAPIBase **)&jresult = result; 
+  return jresult;
+}
+
 
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1stopHandler(JNIEnv *jenv, jclass jcls, jint jarg1) {
   int arg1 ;
@@ -1054,49 +1175,92 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1change_1owne
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1ClientAPIBase(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1current_1nodeId_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_NodeId *arg2 = (UA_NodeId *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = *(UA_NodeId **)&jarg2; 
+  if (arg1) (arg1)->current_nodeId = *arg2;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1current_1nodeId_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_NodeId *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  result = (UA_NodeId *)& ((arg1)->current_nodeId);
+  *(UA_NodeId **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1running_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Boolean arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->running = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1running_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Boolean result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  result = (UA_Boolean) ((arg1)->running);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1Get(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   ClientAPIBase *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  result = (ClientAPIBase *)new ClientAPIBase();
+  result = (ClientAPIBase *)ClientAPIBase::Get();
   *(ClientAPIBase **)&jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1nodeIter(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2, jlong jarg3, jobject jarg3_, jlong jarg4) {
-  jint jresult = 0 ;
-  UA_NodeId arg1 ;
-  UA_Boolean arg2 ;
-  UA_NodeId arg3 ;
-  void *arg4 = (void *) 0 ;
-  UA_NodeId *argp1 ;
-  UA_NodeId *argp3 ;
-  UA_StatusCode result;
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1stopHandler(JNIEnv *jenv, jclass jcls, jint jarg1) {
+  int arg1 ;
   
   (void)jenv;
   (void)jcls;
-  (void)jarg1_;
-  (void)jarg3_;
-  argp1 = *(UA_NodeId **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
-    return 0;
-  }
-  arg1 = *argp1; 
-  arg2 = jarg2 ? true : false; 
-  argp3 = *(UA_NodeId **)&jarg3; 
-  if (!argp3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
-    return 0;
-  }
-  arg3 = *argp3; 
-  arg4 = *(void **)&jarg4; 
-  result = (UA_StatusCode)ClientAPIBase::nodeIter(arg1,arg2,arg3,arg4);
-  jresult = (jint)result; 
-  return jresult;
+  arg1 = (int)jarg1; 
+  ClientAPIBase::stopHandler(arg1);
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1inactivityCallback(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  UA_Client *arg1 = (UA_Client *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(UA_Client **)&jarg1; 
+  ClientAPIBase::inactivityCallback(arg1);
 }
 
 
@@ -1112,24 +1276,35 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1initClient(
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientConnect(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientConnect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3) {
   jint jresult = 0 ;
-  UA_Client *arg1 = (UA_Client *) 0 ;
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Client *arg2 = (UA_Client *) 0 ;
+  char *arg3 = (char *) 0 ;
   UA_StatusCode result;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(UA_Client **)&jarg1; 
-  result = (UA_StatusCode)ClientAPIBase::clientConnect(arg1);
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = *(UA_Client **)&jarg2; 
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)jenv->GetStringUTFChars(jarg3, 0);
+    if (!arg3) return 0;
+  }
+  result = (UA_StatusCode)ClientAPIBase::clientConnect(arg1,arg2,arg3);
   jresult = (jint)result; 
+  if (arg3) jenv->ReleaseStringUTFChars(jarg3, (const char *)arg3);
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1nodeIterC(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1nodeIter(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3) {
   jlong jresult = 0 ;
   UA_NodeId arg1 ;
   UA_Client *arg2 = (UA_Client *) 0 ;
+  char *arg3 = (char *) 0 ;
   UA_NodeId *argp1 ;
   UA_NodeId result;
   
@@ -1143,63 +1318,58 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1nodeIterC(J
   }
   arg1 = *argp1; 
   arg2 = *(UA_Client **)&jarg2; 
-  result = ClientAPIBase::nodeIterC(arg1,arg2);
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)jenv->GetStringUTFChars(jarg3, 0);
+    if (!arg3) return 0;
+  }
+  result = ClientAPIBase::nodeIter(arg1,arg2,arg3);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
+  if (arg3) jenv->ReleaseStringUTFChars(jarg3, (const char *)arg3);
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1getStatusNode(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1getNodeByName(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
   jlong jresult = 0 ;
   UA_Client *arg1 = (UA_Client *) 0 ;
+  char *arg2 = (char *) 0 ;
   UA_NodeId result;
   
   (void)jenv;
   (void)jcls;
   arg1 = *(UA_Client **)&jarg1; 
-  result = ClientAPIBase::getStatusNode(arg1);
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+    if (!arg2) return 0;
+  }
+  result = ClientAPIBase::getNodeByName(arg1,arg2);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
+  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1handler_1TheStatusChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3, jint jarg4, jlong jarg5, jlong jarg6, jobject jarg6_) {
-  UA_Client *arg1 = (UA_Client *) 0 ;
-  UA_UInt32 arg2 ;
-  void *arg3 = (void *) 0 ;
-  UA_UInt32 arg4 ;
-  void *arg5 = (void *) 0 ;
-  UA_DataValue *arg6 = (UA_DataValue *) 0 ;
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientSubtoNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Client *arg2 = (UA_Client *) 0 ;
+  UA_NodeId arg3 ;
+  UA_NodeId *argp3 ;
   
   (void)jenv;
   (void)jcls;
-  (void)jarg6_;
-  arg1 = *(UA_Client **)&jarg1; 
-  arg2 = (UA_UInt32)jarg2; 
-  arg3 = *(void **)&jarg3; 
-  arg4 = (UA_UInt32)jarg4; 
-  arg5 = *(void **)&jarg5; 
-  arg6 = *(UA_DataValue **)&jarg6; 
-  ClientAPIBase::handler_TheStatusChanged(arg1,arg2,arg3,arg4,arg5,arg6);
-}
-
-
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientSubtoNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jobject jarg2_) {
-  UA_Client *arg1 = (UA_Client *) 0 ;
-  UA_NodeId arg2 ;
-  UA_NodeId *argp2 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg2_;
-  arg1 = *(UA_Client **)&jarg1; 
-  argp2 = *(UA_NodeId **)&jarg2; 
-  if (!argp2) {
+  (void)jarg1_;
+  (void)jarg3_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = *(UA_Client **)&jarg2; 
+  argp3 = *(UA_NodeId **)&jarg3; 
+  if (!argp3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
     return ;
   }
-  arg2 = *argp2; 
-  ClientAPIBase::clientSubtoNode(arg1,arg2);
+  arg3 = *argp3; 
+  ClientAPIBase::clientSubtoNode(arg1,arg2,arg3);
 }
 
 
@@ -1263,6 +1433,96 @@ SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientWriteV
 }
 
 
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1monitored_1itemChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_NodeId arg2 ;
+  UA_Int32 arg3 ;
+  UA_NodeId *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  argp2 = *(UA_NodeId **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
+    return ;
+  }
+  arg2 = *argp2; 
+  arg3 = (UA_Int32)jarg3; 
+  (arg1)->monitored_itemChanged(arg2,arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1monitored_1itemChangedSwigExplicitClientAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_NodeId arg2 ;
+  UA_Int32 arg3 ;
+  UA_NodeId *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  argp2 = *(UA_NodeId **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
+    return ;
+  }
+  arg2 = *argp2; 
+  arg3 = (UA_Int32)jarg3; 
+  (arg1)->ClientAPIBase::monitored_itemChanged(arg2,arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientConnected(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jstring jarg4) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  ClientAPIBase *arg2 = (ClientAPIBase *) 0 ;
+  UA_Client *arg3 = (UA_Client *) 0 ;
+  char *arg4 = (char *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = *(ClientAPIBase **)&jarg2; 
+  arg3 = *(UA_Client **)&jarg3; 
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
+    if (!arg4) return ;
+  }
+  (arg1)->clientConnected(arg2,arg3,arg4);
+  if (arg4) jenv->ReleaseStringUTFChars(jarg4, (const char *)arg4);
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientConnectedSwigExplicitClientAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jstring jarg4) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  ClientAPIBase *arg2 = (ClientAPIBase *) 0 ;
+  UA_Client *arg3 = (UA_Client *) 0 ;
+  char *arg4 = (char *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  arg2 = *(ClientAPIBase **)&jarg2; 
+  arg3 = *(UA_Client **)&jarg3; 
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
+    if (!arg4) return ;
+  }
+  (arg1)->ClientAPIBase::clientConnected(arg2,arg3,arg4);
+  if (arg4) jenv->ReleaseStringUTFChars(jarg4, (const char *)arg4);
+}
+
+
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1ClientAPIBase(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
   
@@ -1270,6 +1530,36 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1ClientAPIBase(JNIEn
   (void)jcls;
   arg1 = *(ClientAPIBase **)&jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1ClientAPIBase(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  ClientAPIBase *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (ClientAPIBase *)new SwigDirector_ClientAPIBase(jenv);
+  *(ClientAPIBase **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
+  ClientAPIBase *obj = *((ClientAPIBase **)&objarg);
+  (void)jcls;
+  SwigDirector_ClientAPIBase *director = static_cast<SwigDirector_ClientAPIBase *>(obj);
+  director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE), (jweak_global == JNI_TRUE));
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
+  ClientAPIBase *obj = *((ClientAPIBase **)&objarg);
+  SwigDirector_ClientAPIBase *director = dynamic_cast<SwigDirector_ClientAPIBase *>(obj);
+  (void)jcls;
+  if (director) {
+    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
+  }
 }
 
 
@@ -1855,9 +2145,15 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_swig_1module_1init(JNIEnv *
   static struct {
     const char *method;
     const char *signature;
-  } methods[1] = {
+  } methods[3] = {
     {
       "SwigDirector_ServerAPIBase_monitored_itemChanged", "(Lopen62Wrap/ServerAPIBase;JI)V" 
+    },
+    {
+      "SwigDirector_ClientAPIBase_monitored_itemChanged", "(Lopen62Wrap/ClientAPIBase;JI)V" 
+    },
+    {
+      "SwigDirector_ClientAPIBase_clientConnected", "(Lopen62Wrap/ClientAPIBase;JJLjava/lang/String;)V" 
     }
   };
   Swig::jclass_open62541JNI = (jclass) jenv->NewGlobalRef(jcls);
