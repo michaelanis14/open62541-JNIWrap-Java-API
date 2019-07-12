@@ -1351,11 +1351,13 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1getNodeByNa
 }
 
 
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientSubtoNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_) {
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientSubtoNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_) {
+  jint jresult = 0 ;
   ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
   UA_Client *arg2 = (UA_Client *) 0 ;
   UA_NodeId arg3 ;
   UA_NodeId *argp3 ;
+  UA_UInt32 result;
   
   (void)jenv;
   (void)jcls;
@@ -1366,10 +1368,12 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientSubtoN
   argp3 = *(UA_NodeId **)&jarg3; 
   if (!argp3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
-    return ;
+    return 0;
   }
   arg3 = *argp3; 
-  ClientAPIBase::clientSubtoNode(arg1,arg2,arg3);
+  result = (UA_UInt32)ClientAPIBase::clientSubtoNode(arg1,arg2,arg3);
+  jresult = (jint)result; 
+  return jresult;
 }
 
 
@@ -1430,6 +1434,34 @@ SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1clientWriteV
   result = (UA_StatusCode)ClientAPIBase::clientWriteValue(arg1,arg2,arg3);
   jresult = (jint)result; 
   return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1deleteSubscriptionCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3) {
+  UA_Client *arg1 = (UA_Client *) 0 ;
+  UA_UInt32 arg2 ;
+  void *arg3 = (void *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(UA_Client **)&jarg1; 
+  arg2 = (UA_UInt32)jarg2; 
+  arg3 = *(void **)&jarg3; 
+  ClientAPIBase::deleteSubscriptionCallback(arg1,arg2,arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1subscriptionInactivityCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3) {
+  UA_Client *arg1 = (UA_Client *) 0 ;
+  UA_UInt32 arg2 ;
+  void *arg3 = (void *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(UA_Client **)&jarg1; 
+  arg2 = (UA_UInt32)jarg2; 
+  arg3 = *(void **)&jarg3; 
+  ClientAPIBase::subscriptionInactivityCallback(arg1,arg2,arg3);
 }
 
 

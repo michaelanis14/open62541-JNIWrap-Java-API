@@ -87,8 +87,8 @@ public:
 			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), modelAttr, NULL, NULL);
 
 		UA_VariableAttributes statusAttr = UA_VariableAttributes_default;
-		UA_Boolean status = true;
-		UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_BOOLEAN]);
+		UA_Int32 status = 0;
+		UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_INT32]);
 		statusAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Status");
 		statusAttr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
 		UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
@@ -139,8 +139,8 @@ public:
 			 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), modelAttr, NULL, NULL);
 
 		 UA_VariableAttributes statusAttr = UA_VariableAttributes_default;
-		 UA_Boolean status = true;
-		 UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_BOOLEAN]);
+		 UA_Int32 status = 0;
+		 UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_INT32]);
 		 statusAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Status");
 		 statusAttr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
 		 UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
@@ -161,33 +161,10 @@ public:
 	 }
 
 	 void writeVariable(UA_Server *server, UA_NodeId* nodeId, UA_Int32 intValue) {
-
-		//	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, "the.answer");
-
-		/* Write a different integer value */
-		UA_Int32 myInteger = intValue;
 		UA_Variant myVar;
 		UA_Variant_init(&myVar);
 		UA_Variant_setScalar(&myVar, &intValue, &UA_TYPES[UA_TYPES_INT32]);
 		UA_Server_writeValue(server, (*nodeId), myVar);
-
-		/* Set the status code of the value to an error code. The function
-		* UA_Server_write provides access to the raw service. The above
-		* UA_Server_writeValue is syntactic sugar for writing a specific node
-		* attribute with the write service. */
-		UA_WriteValue wv;
-		UA_WriteValue_init(&wv);
-		wv.nodeId = *nodeId;
-		wv.attributeId = UA_ATTRIBUTEID_VALUE;
-		wv.value.status = UA_STATUSCODE_BADNOTCONNECTED;
-		wv.value.hasStatus = true;
-		UA_Server_write(server, &wv);
-
-		/* Reset the variable to a good statuscode with a value */
-		wv.value.hasStatus = false;
-		wv.value.value = myVar;
-		wv.value.hasValue = true;
-		UA_Server_write(server, &wv);
 	}
 	
 	 virtual void monitored_itemChanged(const UA_NodeId *nodeId, const UA_Int32 value) {}

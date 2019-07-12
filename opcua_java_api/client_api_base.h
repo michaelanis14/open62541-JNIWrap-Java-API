@@ -34,8 +34,8 @@ public:
 	static UA_StatusCode clientConnect(ClientAPIBase * jClientAPIBase, UA_Client * client, char* serverUrl) {
 		signal(SIGINT, stopHandler); /* catches ctrl-c */
 		ClientAPIBase::Get()->clientConfig->inactivityCallback = inactivityCallback; /* Set stateCallback */
-		ClientAPIBase::Get()->clientConfig->connectivityCheckInterval = 2000; /* Perform a connectivity check every 2 seconds */
-
+		ClientAPIBase::Get()->clientConfig->connectivityCheckInterval = 1000; /* Perform a connectivity check every 2 seconds */
+		//ClientAPIBase::Get()->clientConfig->timeout = 70000;
 											  /* Endless loop runAsync */
 		while (ClientAPIBase::Get()->running) {
 			/* if already connected, this will return GOOD and do nothing */
@@ -51,7 +51,7 @@ public:
 				continue;
 			}
 			jClientAPIBase->clientConnected(jClientAPIBase,client,serverUrl);
-			UA_Client_run_iterate(client, 1000);
+			UA_Client_run_iterate(client, 5000);
 		};
 
 		/* Clean up */
@@ -145,7 +145,7 @@ public:
 	}
 
 	
-	static void clientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID);
+	static UA_UInt32 clientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID);
 
 
 
@@ -203,6 +203,22 @@ public:
 		return write_state;
 
 	}
+
+
+
+	static void
+		deleteSubscriptionCallback(UA_Client *client, UA_UInt32 subscriptionId, void *subscriptionContext) {
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+			"Subscription Id %u was deleted", subscriptionId);
+	}
+
+	static void
+		subscriptionInactivityCallback(UA_Client *client, UA_UInt32 subId, void *subContext) {
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Inactivity for subscription %u", subId);
+	}
+
+
+
 
 	virtual void monitored_itemChanged(UA_NodeId nodeId, const UA_Int32 value) {}
 	virtual void clientConnected(ClientAPIBase * jClientAPIBase, UA_Client *client,char* serverUrl) {}
