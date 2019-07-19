@@ -43,14 +43,14 @@ On the other hand, Using visual studio 2015 open .sln however make sure you have
 ### Java usage code example 
 
 ```bash
-		serverAPI = new ServerAPIBase();
-		server = serverAPI.createServer(4840, "localhost");
-		
-		UA_NodeId type = new UA_NodeId();
-		type.setIdentifierType(UA_NodeIdType.UA_NODEIDTYPE_NUMERIC);
-		
-		UA_NodeId object = serverAPI.addObject(server, "OPCUA Object");
-		int accessRights = open62541.UA_ACCESSLEVELMASK_WRITE | open62541.UA_ACCESSLEVELMASK_READ;
-		serverAPI.addVariableNode(server, object, "Hello Variable from Java", open62541.UA_TYPES_STRING, accessRights);
+ serverAPI = new ServerAPIBase();
+ server = serverAPI.createServer(4840, "localhost");
+ 
+ UA_NodeId type = new UA_NodeId();
+ type.setIdentifierType(UA_NodeIdType.UA_NODEIDTYPE_NUMERIC);
+ 
+ UA_NodeId object = serverAPI.addObject(server, "OPCUA Object");
+ int accessRights = open62541.UA_ACCESSLEVELMASK_WRITE | open62541.UA_ACCESSLEVELMASK_READ;
+ serverAPI.addVariableNode(server, object, "Hello Variable from Java", open62541.UA_TYPES_STRING, accessRights);
 	
 ```
