@@ -14,8 +14,8 @@ first build and bug fixes.
 ### TODO
 
 - [ ] let the cmakelist generate the java classes duing the build.
+- [ ] better cmakelist options for example build server files only.
 - [ ] package the generated java classes into a single jar.
-- [ ] Add more generaric methods in the helper classes ex. init a server with custome port and ip.
 
 ### PREREQUISITES
 
@@ -43,8 +43,14 @@ On the other hand, Using visual studio 2015 open .sln however make sure you have
 ### Java usage code example 
 
 ```bash
-  ServerAPIBase	serverAPI = new ServerAPIBase();
-	SWIGTYPE_p_UA_Servers erver = serverAPI.createServerDefaultConfig();
-	UA_NodeId	statusNodeID = serverAPI.manuallyDefineIMM(server);
-	serverAPI.addMonitoredItem(new MoldingMachine_OPCUA(), server, statusNodeID);
+		serverAPI = new ServerAPIBase();
+		server = serverAPI.createServer(4840, "localhost");
+		
+		UA_NodeId type = new UA_NodeId();
+		type.setIdentifierType(UA_NodeIdType.UA_NODEIDTYPE_NUMERIC);
+		
+		UA_NodeId object = serverAPI.addObject(server, "OPCUA Object");
+		int accessRights = open62541.UA_ACCESSLEVELMASK_WRITE | open62541.UA_ACCESSLEVELMASK_READ;
+		serverAPI.addVariableNode(server, object, "Hello Variable from Java", open62541.UA_TYPES_STRING, accessRights);
+	
 ```
