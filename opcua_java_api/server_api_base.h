@@ -10,8 +10,10 @@ class ServerAPIBase {
 
 private:
 	static ServerAPIBase *jAPIBase_local;
+	
 public:
-
+	void *d;
+	UA_Variant *output;
 	static ServerAPIBase * Get();
 
 	static void stopHandler(int sig) {
@@ -40,6 +42,8 @@ public:
 		
 		 UA_ServerConfig_setCustomHostname(UA_Server_getConfig(server), name);
 
+		 UA_ServerConfig_addSecurityPolicyNone(UA_Server_getConfig(server), NULL);
+
 		 return server;																
 		 
 	 }
@@ -55,120 +59,28 @@ public:
 		return server;
 	}
 
-	 void addMonitoredItem(ServerAPIBase *jAPIBase,UA_Server *server, UA_NodeId immId);
+	 void addMonitoredItem(UA_Server *server, UA_NodeId immId, ServerAPIBase *jAPIBase);
 	
-	 UA_NodeId manuallyDefineIMM(UA_Server *server) {
-		UA_NodeId statusNodeId;
-		UA_NodeId immId; /* get the nodeid assigned by the server */
-		UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-		oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "IMM");
-		UA_Server_addObjectNode(server, UA_NODEID_NULL,
-			UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-			UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-			UA_QUALIFIEDNAME(1, "IMM"), UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
-			oAttr, NULL, &immId);
+	 UA_NodeId addObject(UA_Server *server, char* name);
+	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
+	 UA_NodeId manuallyDefineIMM(UA_Server *server);
+	 UA_NodeId manuallyDefineRobot(UA_Server *server);
 
-		UA_VariableAttributes mnAttr = UA_VariableAttributes_default;
-		UA_String manufacturerName = UA_STRING("IMM Ltd.");
-		UA_Variant_setScalar(&mnAttr.value, &manufacturerName, &UA_TYPES[UA_TYPES_STRING]);
-		mnAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ManufacturerName");
-		UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			UA_QUALIFIEDNAME(1, "ManufacturerName"),
-			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), mnAttr, NULL, NULL);
+	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, int intValue);
+	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, char * stringValue);
+	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, double  doubleValue);
+	 UA_NodeId getDataTypeNode(UA_Int32 typeId);
+	 void addMethod(UA_Server *server, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
 
-		UA_VariableAttributes modelAttr = UA_VariableAttributes_default;
-		UA_String modelName = UA_STRING("IMM 3000");
-		UA_Variant_setScalar(&modelAttr.value, &modelName, &UA_TYPES[UA_TYPES_STRING]);
-		modelAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ModelName");
-		UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			UA_QUALIFIEDNAME(1, "ModelName"),
-			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), modelAttr, NULL, NULL);
 
-		UA_VariableAttributes statusAttr = UA_VariableAttributes_default;
-		UA_Int32 status = 0;
-		UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_INT32]);
-		statusAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Status");
-		statusAttr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
-		UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			UA_QUALIFIEDNAME(1, "Status"),
-			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), statusAttr, NULL, &statusNodeId);
+	 void setData(void *);
+	 void *getData();
+	 void setMethodOutput(UA_String output);
 
-		UA_VariableAttributes rpmAttr = UA_VariableAttributes_default;
-		UA_Double rpm = 50.0;
-		UA_Variant_setScalar(&rpmAttr.value, &rpm, &UA_TYPES[UA_TYPES_DOUBLE]);
-		rpmAttr.displayName = UA_LOCALIZEDTEXT("en-US", "MouldSize");
-		UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			UA_QUALIFIEDNAME(1, "MotorRPMs"),
-			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), rpmAttr, NULL, NULL);
-
-		return statusNodeId;
-	}
-	
-
-	 UA_NodeId manuallyDefineRobot(UA_Server *server) {
-		 UA_NodeId statusNodeId;
-		 UA_NodeId immId; /* get the nodeid assigned by the server */
-		 UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
-		 oAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Robot");
-		 UA_Server_addObjectNode(server, UA_NODEID_NULL,
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
-			 UA_QUALIFIEDNAME(1, "Robot"), UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
-			 oAttr, NULL, &immId);
-
-		 UA_VariableAttributes mnAttr = UA_VariableAttributes_default;
-		 UA_String manufacturerName = UA_STRING("Robot Ltd.");
-		 UA_Variant_setScalar(&mnAttr.value, &manufacturerName, &UA_TYPES[UA_TYPES_STRING]);
-		 mnAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ManufacturerName");
-		 UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			 UA_QUALIFIEDNAME(1, "ManufacturerName"),
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), mnAttr, NULL, NULL);
-
-		 UA_VariableAttributes modelAttr = UA_VariableAttributes_default;
-		 UA_String modelName = UA_STRING("Robot 3000");
-		 UA_Variant_setScalar(&modelAttr.value, &modelName, &UA_TYPES[UA_TYPES_STRING]);
-		 modelAttr.displayName = UA_LOCALIZEDTEXT("en-US", "ModelName");
-		 UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			 UA_QUALIFIEDNAME(1, "ModelName"),
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), modelAttr, NULL, NULL);
-
-		 UA_VariableAttributes statusAttr = UA_VariableAttributes_default;
-		 UA_Int32 status = 0;
-		 UA_Variant_setScalar(&statusAttr.value, &status, &UA_TYPES[UA_TYPES_INT32]);
-		 statusAttr.displayName = UA_LOCALIZEDTEXT("en-US", "Status");
-		 statusAttr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
-		 UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			 UA_QUALIFIEDNAME(1, "Status"),
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), statusAttr, NULL, &statusNodeId);
-
-		 UA_VariableAttributes rpmAttr = UA_VariableAttributes_default;
-		 UA_Double rpm = 50.0;
-		 UA_Variant_setScalar(&rpmAttr.value, &rpm, &UA_TYPES[UA_TYPES_DOUBLE]);
-		 rpmAttr.displayName = UA_LOCALIZEDTEXT("en-US", "MouldSize");
-		 UA_Server_addVariableNode(server, UA_NODEID_NULL, immId,
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
-			 UA_QUALIFIEDNAME(1, "ArmMotorRPMs"),
-			 UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), rpmAttr, NULL, NULL);
-
-		 return statusNodeId;
-	 }
-
-	 void writeVariable(UA_Server *server, UA_NodeId* nodeId, UA_Int32 intValue) {
-		UA_Variant myVar;
-		UA_Variant_init(&myVar);
-		UA_Variant_setScalar(&myVar, &intValue, &UA_TYPES[UA_TYPES_INT32]);
-		UA_Server_writeValue(server, (*nodeId), myVar);
-	}
-	
 	 virtual void monitored_itemChanged(const UA_NodeId *nodeId, const UA_Int32 value) {}
-	
+	 virtual void methods_callback(ServerAPIBase *jAPIBase, const UA_NodeId *methodId, const UA_NodeId *objectId, UA_String input, UA_String output) {}
+
+
 
 
 	virtual ~ServerAPIBase() {}

@@ -50,7 +50,7 @@ public:
 				UA_sleep_ms(1000);
 				continue;
 			}
-			jClientAPIBase->clientConnected(jClientAPIBase,client,serverUrl);
+			jClientAPIBase->client_connected(jClientAPIBase,client,serverUrl);
 			UA_Client_run_iterate(client, 5000);
 		};
 
@@ -221,8 +221,8 @@ public:
 
 
 	virtual void monitored_itemChanged(UA_NodeId nodeId, const UA_Int32 value) {}
-	virtual void clientConnected(ClientAPIBase * jClientAPIBase, UA_Client *client,char* serverUrl) {}
-
+	virtual void client_connected(ClientAPIBase * jClientAPIBase, UA_Client *client,char* serverUrl) {}
+	
 	virtual ~ClientAPIBase() {}
 };
 
