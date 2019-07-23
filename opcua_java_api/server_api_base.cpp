@@ -91,12 +91,12 @@ static UA_StatusCode methodCallback(UA_Server *server,
 			monRequest, NULL, dataChangeNotificationCallback);
 	}
 
-	UA_NodeId ServerAPIBase::addObject(UA_Server * server, char* name)
+	UA_NodeId ServerAPIBase::addObject(UA_Server * server, const UA_Int32 requestedNewNodeId, char* name)
 	{
 		UA_NodeId immId; /* get the nodeid assigned by the server */
 		UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
 		oAttr.displayName = UA_LOCALIZEDTEXT("en-US", name);
-		UA_Server_addObjectNode(server, UA_NODEID_NULL,
+		UA_Server_addObjectNode(server, UA_NODEID_NUMERIC(1, requestedNewNodeId),
 			UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
 			UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
 			UA_QUALIFIEDNAME(1, name), UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
@@ -104,14 +104,14 @@ static UA_StatusCode methodCallback(UA_Server *server,
 		return immId;
 	}
 
-	UA_NodeId ServerAPIBase::addVariableNode(UA_Server * server, UA_NodeId objectId, char * name, UA_Int32 typeId, UA_Int32 accessLevel)
+	UA_NodeId ServerAPIBase::addVariableNode(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel)
 	{
 		UA_NodeId nodeId;
 		UA_VariableAttributes attributes = UA_VariableAttributes_default;
 		UA_Variant_setScalar(&attributes.value, UA_new(&UA_TYPES[typeId]), &UA_TYPES[typeId]);
 		attributes.displayName = UA_LOCALIZEDTEXT("en-US", name);
 		attributes.accessLevel = accessLevel;
-		UA_Server_addVariableNode(server, UA_NODEID_NULL, objectId,
+		UA_Server_addVariableNode(server, UA_NODEID_NUMERIC(1, requestedNewNodeId), objectId,
 			UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
 			UA_QUALIFIEDNAME(1, name),
 			UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attributes, NULL, &nodeId);
@@ -122,14 +122,17 @@ static UA_StatusCode methodCallback(UA_Server *server,
 		UA_Variant myVar;
 		UA_Variant_init(&myVar);
 		UA_Variant_setScalar(&myVar, &intValue, &UA_TYPES[UA_TYPES_INT32]);
+		
 		return UA_Server_writeValue(server, (*nodeId), myVar);
 	}
+
 	UA_StatusCode ServerAPIBase::writeVariable(UA_Server *server, UA_NodeId* nodeId, char * stringValue) {
 		UA_Variant myVar;
 		UA_Variant_init(&myVar);
 		UA_Variant_setScalar(&myVar, stringValue, &UA_TYPES[UA_TYPES_STRING]);
 		return UA_Server_writeValue(server, (*nodeId), myVar);
 	}
+	
 	UA_StatusCode ServerAPIBase::writeVariable(UA_Server *server, UA_NodeId* nodeId, double doubleValue) {
 		UA_Variant myVar;
 		UA_Variant_init(&myVar);
@@ -161,27 +164,29 @@ static UA_StatusCode methodCallback(UA_Server *server,
 		UA_NodeId statusNodeId;
 		UA_NodeId immId; /* get the nodeid assigned by the server */
 
-		immId = addObject(server, "IMM");
-		addVariableNode(server, immId, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-		addVariableNode(server, immId, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-		addVariableNode(server, immId, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
-		statusNodeId = addVariableNode(server, immId, "Status", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
+		immId = addObject(server, 10, "IMM");
+		addVariableNode(server, immId, 11, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+		addVariableNode(server, immId, 12, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+		addVariableNode(server, immId, 13, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
+		statusNodeId = addVariableNode(server, immId, 14, "Status", UA_TYPES_INT32, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
 		
 		writeVariable(server, &statusNodeId, -1);
+
 		return statusNodeId;
 	}
 
 	UA_NodeId ServerAPIBase::manuallyDefineRobot(UA_Server * server)
 	{
 		UA_NodeId statusNodeId;
-		UA_NodeId immId; /* get the nodeid assigned by the server */
+		UA_NodeId robotId; /* get the nodeid assigned by the server */
 
-		immId = addObject(server, "IMM");
-		addVariableNode(server, immId, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-		addVariableNode(server, immId, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-		addVariableNode(server, immId, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
-		statusNodeId = addVariableNode(server, immId, "Status", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
-		//int number = -1;
-		writeVariable(server, &statusNodeId, -1);
+		robotId = addObject(server, 20, "Robot");
+		addVariableNode(server, robotId, 21, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+		addVariableNode(server, robotId, 22, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+		addVariableNode(server, robotId, 23, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
+		statusNodeId = addVariableNode(server, robotId, 24, "Robot_Status", UA_TYPES_INT32, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
+
+		writeVariable(server, &statusNodeId, 0);
+
 		return statusNodeId;
 	}

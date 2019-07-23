@@ -847,8 +847,6 @@ void SwigDirector_ServerAPIBase::methods_callback(ServerAPIBase *jAPIBase, UA_No
 	$2[output.length] = '\0';
 	//	strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
 	joutput = (jenv)->NewStringUTF($2);
-
-
     jenv->CallStaticVoidMethod(Swig::jclass_open62541JNI, Swig::director_method_ids[1], swigjobj, jjAPIBase, jmethodId, jobjectId, jinput, joutput);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
@@ -1156,11 +1154,12 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addMonitored
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addObject(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addObject(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jint jarg3, jstring jarg4) {
   jlong jresult = 0 ;
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *arg2 = (UA_Server *) 0 ;
-  char *arg3 = (char *) 0 ;
+  UA_Int32 arg3 ;
+  char *arg4 = (char *) 0 ;
   UA_NodeId result;
   
   (void)jenv;
@@ -1168,26 +1167,28 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addObject(J
   (void)jarg1_;
   arg1 = *(ServerAPIBase **)&jarg1; 
   arg2 = *(UA_Server **)&jarg2; 
-  arg3 = 0;
-  if (jarg3) {
-    arg3 = (char *)jenv->GetStringUTFChars(jarg3, 0);
-    if (!arg3) return 0;
+  arg3 = (UA_Int32)jarg3; 
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
+    if (!arg4) return 0;
   }
-  result = (arg1)->addObject(arg2,arg3);
+  result = (arg1)->addObject(arg2,arg3,arg4);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
-  if (arg3) jenv->ReleaseStringUTFChars(jarg3, (const char *)arg3);
+  if (arg4) jenv->ReleaseStringUTFChars(jarg4, (const char *)arg4);
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addVariableNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_, jstring jarg4, jint jarg5, jint jarg6) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addVariableNode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jobject jarg3_, jint jarg4, jstring jarg5, jint jarg6, jint jarg7) {
   jlong jresult = 0 ;
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_Server *arg2 = (UA_Server *) 0 ;
   UA_NodeId arg3 ;
-  char *arg4 = (char *) 0 ;
-  UA_Int32 arg5 ;
+  UA_Int32 arg4 ;
+  char *arg5 = (char *) 0 ;
   UA_Int32 arg6 ;
+  UA_Int32 arg7 ;
   UA_NodeId *argp3 ;
   UA_NodeId result;
   
@@ -1203,16 +1204,17 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1addVariable
     return 0;
   }
   arg3 = *argp3; 
-  arg4 = 0;
-  if (jarg4) {
-    arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
-    if (!arg4) return 0;
+  arg4 = (UA_Int32)jarg4; 
+  arg5 = 0;
+  if (jarg5) {
+    arg5 = (char *)jenv->GetStringUTFChars(jarg5, 0);
+    if (!arg5) return 0;
   }
-  arg5 = (UA_Int32)jarg5; 
   arg6 = (UA_Int32)jarg6; 
-  result = (arg1)->addVariableNode(arg2,arg3,arg4,arg5,arg6);
+  arg7 = (UA_Int32)jarg7; 
+  result = (arg1)->addVariableNode(arg2,arg3,arg4,arg5,arg6,arg7);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
-  if (arg4) jenv->ReleaseStringUTFChars(jarg4, (const char *)arg4);
+  if (arg5) jenv->ReleaseStringUTFChars(jarg5, (const char *)arg5);
   return jresult;
 }
 

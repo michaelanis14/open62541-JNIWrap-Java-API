@@ -61,8 +61,8 @@ public:
 
 	 void addMonitoredItem(UA_Server *server, UA_NodeId immId, ServerAPIBase *jAPIBase);
 	
-	 UA_NodeId addObject(UA_Server *server, char* name);
-	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
+	 UA_NodeId addObject(UA_Server *server, const UA_Int32 requestedNewNodeId, char* name);
+	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
 	 UA_NodeId manuallyDefineIMM(UA_Server *server);
 	 UA_NodeId manuallyDefineRobot(UA_Server *server);
 
