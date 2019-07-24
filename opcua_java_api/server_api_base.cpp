@@ -53,7 +53,7 @@ static UA_StatusCode methodCallback(UA_Server *server,
 		tmp.length += inputStr->length;
 	}
 	
-	//UA_Variant_setScalarCopy(output, &tmp, &UA_TYPES[UA_TYPES_STRING]);
+	UA_Variant_setScalarCopy(output, &tmp, &UA_TYPES[UA_TYPES_STRING]);
 	UA_String_clear(&tmp);
 	ServerAPIBase* serverApi = ServerAPIBase::Get();
 	serverApi->output = output;

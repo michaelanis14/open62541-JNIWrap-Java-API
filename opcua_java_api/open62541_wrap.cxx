@@ -756,6 +756,14 @@ namespace Swig {
 #include <stdint.h>		// Use the C99 official header
 
 
+typedef union {
+		UA_UInt32     numeric;
+		UA_String     string;
+		UA_Guid       guid;
+		UA_ByteString byteString;
+	} Identifier;
+
+
 static int *new_intp() { 
   return new int(); 
 }
@@ -833,20 +841,24 @@ void SwigDirector_ServerAPIBase::methods_callback(ServerAPIBase *jAPIBase, UA_No
     *((ServerAPIBase **)&jjAPIBase) = (ServerAPIBase *) jAPIBase; 
     *((UA_NodeId **)&jmethodId) = (UA_NodeId *) methodId; 
     *((UA_NodeId **)&jobjectId) = (UA_NodeId *) objectId; 
-	char* $2 = (char*)UA_malloc(sizeof(char)*input.length + 1);
-	memcpy($2, input.data, input.length);
-	$2[input.length] = '\0';
-	//strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
-	jinput = (jenv)->NewStringUTF($2);
-
-
-
-
-	$2 = (char*)UA_malloc(sizeof(char)*output.length + 1);
-	memcpy($2, output.data, output.length);
-	$2[output.length] = '\0';
-	//	strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
-	joutput = (jenv)->NewStringUTF($2);
+    
+    {
+      char* $2 = (char*)UA_malloc(sizeof(char)*(&input)->length + 1);
+      memcpy($2, (&input)->data, (&input)->length);
+      $2[(&input)->length] = '\0';
+      //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+      jinput = (jenv)->NewStringUTF($2);	
+    }  
+    
+    
+    {
+      char* $2 = (char*)UA_malloc(sizeof(char)*(&output)->length + 1);
+      memcpy($2, (&output)->data, (&output)->length);
+      $2[(&output)->length] = '\0';
+      //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+      joutput = (jenv)->NewStringUTF($2);	
+    }  
+    
     jenv->CallStaticVoidMethod(Swig::jclass_open62541JNI, Swig::director_method_ids[1], swigjobj, jjAPIBase, jmethodId, jobjectId, jinput, joutput);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
@@ -2006,6 +2018,161 @@ SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NODEIDTYPE_1BYTESTRING_
 }
 
 
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_Identifier_1numeric_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_UInt32 arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  arg2 = (UA_UInt32)jarg2; 
+  if (arg1) (arg1)->numeric = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_Identifier_1numeric_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_UInt32 result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  result = (UA_UInt32) ((arg1)->numeric);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_Identifier_1string_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_String arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  {
+    const char *nativeString = (jenv)->GetStringUTFChars(jarg2, 0);
+    arg2 = UA_STRING((char *)nativeString);
+  }
+  if (arg1) (arg1)->string = arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_Identifier_1string_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_String result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  result =  ((arg1)->string);
+  {
+    char* $2 = (char*)UA_malloc(sizeof(char)*(&result)->length + 1);
+    memcpy($2, (&result)->data, (&result)->length);
+    $2[(&result)->length] = '\0';
+    //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+    jresult = (jenv)->NewStringUTF($2);	
+  }
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_Identifier_1guid_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_Guid arg2 ;
+  UA_Guid *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  argp2 = *(UA_Guid **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_Guid");
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->guid = arg2;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_Identifier_1guid_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_Guid result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  result =  ((arg1)->guid);
+  *(UA_Guid **)&jresult = new UA_Guid((const UA_Guid &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_Identifier_1byteString_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_ByteString arg2 ;
+  UA_ByteString *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  argp2 = *(UA_ByteString **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_ByteString");
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->byteString = arg2;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_Identifier_1byteString_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  Identifier *arg1 = (Identifier *) 0 ;
+  UA_ByteString result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Identifier **)&jarg1; 
+  result =  ((arg1)->byteString);
+  *(UA_ByteString **)&jresult = new UA_ByteString((const UA_ByteString &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1Identifier(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  Identifier *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (Identifier *)new Identifier();
+  *(Identifier **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_delete_1Identifier(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  Identifier *arg1 = (Identifier *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(Identifier **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1namespaceIndex_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   UA_NodeId *arg1 = (UA_NodeId *) 0 ;
   UA_UInt16 arg2 ;
@@ -2062,6 +2229,40 @@ SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1identifierType_
 }
 
 
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1identifier_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  UA_NodeId *arg1 = (UA_NodeId *) 0 ;
+  Identifier *arg2 = (Identifier *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(UA_NodeId **)&jarg1; 
+  arg2 = *(Identifier **)&jarg2; 
+  {
+    if (arg2) (arg1->identifier).numeric = (*arg2).numeric;
+    if (arg2) (arg1->identifier).byteString = (*arg2).byteString;
+    if (arg2) (arg1->identifier).guid = (*arg2).guid;
+    if (arg2) (arg1->identifier).string = (*arg2).string;
+  }
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1NodeId_1identifier_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  UA_NodeId *arg1 = (UA_NodeId *) 0 ;
+  Identifier *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(UA_NodeId **)&jarg1; 
+  result = (Identifier *)& ((arg1)->identifier);
+  *(Identifier **)&jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_new_1UA_1NodeId(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   UA_NodeId *result = 0 ;
@@ -2114,10 +2315,8 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_UA_1Argument_1name_1get(
     char* $2 = (char*)UA_malloc(sizeof(char)*(&result)->length + 1);
     memcpy($2, (&result)->data, (&result)->length);
     $2[(&result)->length] = '\0';
-    strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
-    jresult = (jenv)->NewStringUTF($2);
-    
-    
+    //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+    jresult = (jenv)->NewStringUTF($2);	
   }
   return jresult;
 }
@@ -2317,10 +2516,8 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_UA_1LocalizedText_1local
     char* $2 = (char*)UA_malloc(sizeof(char)*(&result)->length + 1);
     memcpy($2, (&result)->data, (&result)->length);
     $2[(&result)->length] = '\0';
-    strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
-    jresult = (jenv)->NewStringUTF($2);
-    
-    
+    //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+    jresult = (jenv)->NewStringUTF($2);	
   }
   return jresult;
 }
@@ -2356,10 +2553,8 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_UA_1LocalizedText_1text_
     char* $2 = (char*)UA_malloc(sizeof(char)*(&result)->length + 1);
     memcpy($2, (&result)->data, (&result)->length);
     $2[(&result)->length] = '\0';
-    strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
-    jresult = (jenv)->NewStringUTF($2);
-    
-    
+    //strcpy($2, "123456789"); // with the null terminator the string adds up to 10 bytes
+    jresult = (jenv)->NewStringUTF($2);	
   }
   return jresult;
 }
