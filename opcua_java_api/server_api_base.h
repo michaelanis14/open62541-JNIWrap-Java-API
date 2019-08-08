@@ -10,54 +10,24 @@ class ServerAPIBase {
 
 private:
 	static ServerAPIBase *jAPIBase_local;
-	
+	struct method_output
+	{
+		UA_NodeId key;
+		UA_Variant value;
+	};
 public:
 	void *d;
 	UA_Variant *output;
+	UA_Boolean running;
 	static ServerAPIBase * Get();
 
-	static void stopHandler(int sig) {
-		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "received ctrl-c");
-		
-	}
+	static void stopHandler(int sig);
 
-	 UA_Server *  createServerDefaultConfig(void) {
-		UA_Server *server = UA_Server_new();
-		UA_ServerConfig_setDefault(UA_Server_getConfig(server));
-		return server;
-	}
+	UA_Server *  createServerDefaultConfig(void); 
 
-	 UA_Server * createServer(UA_UInt16 port, char* host) {
-		 // argv[1] contains your ip address
-		 // personalize server configuration
-		 UA_Server *server = UA_Server_new();
-		 
-		 UA_ServerConfig_setMinimal(UA_Server_getConfig(server), port, NULL); // set the port
-																			  // set hostname to ip address
-		 UA_String name;
-		 UA_String_init(&name);
+	 UA_Server * createServer( char* host, UA_UInt16 port); 
 
-		 name.length = strlen(host);
-		 name.data = (UA_Byte *)host;
-		
-		 UA_ServerConfig_setCustomHostname(UA_Server_getConfig(server), name);
-
-		 UA_ServerConfig_addSecurityPolicyNone(UA_Server_getConfig(server), NULL);
-
-		 return server;																
-		 
-	 }
-
-	 UA_Server *  runServer(UA_Server * server) {
-		signal(SIGINT, stopHandler);
-		signal(SIGTERM, stopHandler);
-		UA_Boolean running = true;
-		UA_Server_run(server, &running);
-		UA_StatusCode retval = UA_Server_run(server, &running);
-		UA_Server_delete(server);
-		
-		return server;
-	}
+	 UA_StatusCode  runServer(UA_Server * server);
 
 	 void addMonitoredItem(UA_Server *server, UA_NodeId immId, ServerAPIBase *jAPIBase);
 	
@@ -70,7 +40,7 @@ public:
 	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, char * stringValue);
 	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, double  doubleValue);
 	 UA_NodeId getDataTypeNode(UA_Int32 typeId);
-	 void addMethod(UA_Server *server, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
+	 UA_NodeId addMethod(UA_Server *server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId , UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
 
 
 	 void setData(void *);
@@ -78,7 +48,7 @@ public:
 	 void setMethodOutput(UA_String output);
 
 	 virtual void monitored_itemChanged(const UA_NodeId *nodeId, const UA_Int32 value) {}
-	 virtual void methods_callback(ServerAPIBase *jAPIBase, const UA_NodeId *methodId, const UA_NodeId *objectId, UA_String input, UA_String output) {}
+	 virtual void methods_callback( const UA_NodeId *methodId, const UA_NodeId *objectId, UA_String input, UA_String output,ServerAPIBase *jAPIBase) {}
 
 
 

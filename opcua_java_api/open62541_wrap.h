@@ -17,7 +17,7 @@ public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
     SwigDirector_ServerAPIBase(JNIEnv *jenv);
     virtual void monitored_itemChanged(UA_NodeId const *nodeId, UA_Int32 const value);
-    virtual void methods_callback(ServerAPIBase *jAPIBase, UA_NodeId const *methodId, UA_NodeId const *objectId, UA_String input, UA_String output);
+    virtual void methods_callback(UA_NodeId const *methodId, UA_NodeId const *objectId, UA_String input, UA_String output, ServerAPIBase *jAPIBase);
     virtual ~SwigDirector_ServerAPIBase();
 public:
     bool swig_overrides(int n) {
@@ -34,13 +34,14 @@ public:
     SwigDirector_ClientAPIBase(JNIEnv *jenv);
     virtual void monitored_itemChanged(UA_NodeId nodeId, UA_Int32 const value);
     virtual void client_connected(ClientAPIBase *jClientAPIBase, UA_Client *client, char *serverUrl);
+    virtual void methods_callback(UA_NodeId const objectId, UA_NodeId const methodId, UA_String input, UA_String output, ClientAPIBase *jAPIBase);
     virtual ~SwigDirector_ClientAPIBase();
 public:
     bool swig_overrides(int n) {
-      return (n < 2 ? swig_override[n] : false);
+      return (n < 3 ? swig_override[n] : false);
     }
 protected:
-    Swig::BoolArray<2> swig_override;
+    Swig::BoolArray<3> swig_override;
 };
 
 
