@@ -1527,19 +1527,28 @@ SWIGEXPORT jobject JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1getData(J
 }
 
 
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1setMethodOutput(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1setMethodOutput(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jstring jarg3) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
-  UA_String arg2 ;
+  UA_NodeId arg2 ;
+  UA_String arg3 ;
+  UA_NodeId *argp2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(ServerAPIBase **)&jarg1; 
-  {
-    const char *nativeString = (jenv)->GetStringUTFChars(jarg2, 0);
-    arg2 = UA_STRING((char *)nativeString);
+  argp2 = *(UA_NodeId **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
+    return ;
   }
-  (arg1)->setMethodOutput(arg2);
+  arg2 = *argp2; 
+  {
+    const char *nativeString = (jenv)->GetStringUTFChars(jarg3, 0);
+    arg3 = UA_STRING((char *)nativeString);
+  }
+  (arg1)->setMethodOutput(arg2,arg3);
 }
 
 

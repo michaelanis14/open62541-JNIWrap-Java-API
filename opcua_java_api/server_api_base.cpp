@@ -5,6 +5,11 @@
 
 
 ServerAPIBase * ServerAPIBase::jAPIBase_local = 0;
+void ServerAPIBase::stopHandler(int sig)
+{
+	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "received ctrl-c " + sig);
+	ServerAPIBase::Get()->running = false;
+}
 
 static void dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
 	void *monitoredItemContext, const UA_NodeId *nodeId,
@@ -25,14 +30,18 @@ void *ServerAPIBase::getData() {
 	return ServerAPIBase::Get()->d;
 }
 
-void ServerAPIBase::setMethodOutput(UA_String output)
+void ServerAPIBase::setMethodOutput(UA_NodeId methodId, UA_String output)
 {
-	UA_Variant_setScalarCopy(ServerAPIBase::Get()->output, &output, &UA_TYPES[UA_TYPES_STRING]);
+	ServerAPIBase* serverApi = ServerAPIBase::Get();
+	int nodeOutputIndex = serverApi->getNodeIdIndex(methodId);
+	if (nodeOutputIndex != -1) {
+		UA_Variant_setScalarCopy(serverApi->methodOutputs[nodeOutputIndex].value, &output, &UA_TYPES[UA_TYPES_STRING]);
+	}
 }
 
 
 
-static UA_StatusCode methodCallback(UA_Server *server,
+UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	const UA_NodeId *sessionId, void *sessionHandle,
 	const UA_NodeId *methodId, void *methodContext,
 	const UA_NodeId *objectId, void *objectContext,
@@ -43,8 +52,13 @@ static UA_StatusCode methodCallback(UA_Server *server,
 	
 	UA_String *inputStr = (UA_String*)input->data;
 
-	ServerAPIBase* serverApi = ServerAPIBase::Get();
-	serverApi->output = output;
+	
+	//serverApi->output = output;
+	int nodeOutputIndex = ServerAPIBase::Get()->getNodeIdIndex(*methodId);
+	ServerAPIBase* serverApi = ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].api_local;
+	
+	ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].value = output;
+	
 
 	serverApi->methods_callback(methodId, objectId, *inputStr, *inputStr, serverApi);
 	
@@ -63,16 +77,43 @@ ServerAPIBase * ServerAPIBase::Get()
 	if (jAPIBase_local == 0) {
 		//printf("New Refrence SERVER API");
 		jAPIBase_local = new ServerAPIBase();
+		
 	}//else printf("Keeping Refrence SERVER API");
 
 	return jAPIBase_local;
 }
 
-void ServerAPIBase::stopHandler(int sig)
+bool ServerAPIBase::addOutput(method_output output)
 {
-	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "received ctrl-c " + sig);
-	ServerAPIBase::Get()->running = false;
+	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "addOutput, id %u \n", jAPIBase_local->outputs_length);
+
+
+	if(jAPIBase_local->outputs_length != 1){
+	method_output* temp = new method_output[jAPIBase_local->outputs_length];
+	memcpy(temp, methodOutputs, jAPIBase_local->outputs_length * sizeof(method_output));
+	delete[] methodOutputs;
+	methodOutputs = temp;
+	}
+	else {
+		jAPIBase_local->methodOutputs = new method_output[jAPIBase_local->outputs_length];
+	}
+	methodOutputs[jAPIBase_local->outputs_length - 1] = output;
+	jAPIBase_local->outputs_length++;
+	return true;
 }
+
+int ServerAPIBase::getNodeIdIndex(UA_NodeId nodeId)
+{
+	
+	for (int i = 0; i < outputs_length; i++) {
+		if (UA_NodeId_equal(&methodOutputs[i].key, &nodeId)){
+			UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "getNodeIdIndex, id %u \n", i);
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 UA_Server * ServerAPIBase::createServerDefaultConfig(void)
 {
@@ -186,7 +227,7 @@ UA_NodeId ServerAPIBase::addMethod(UA_Server * server, UA_NodeId objectId, const
 	memcpy(methodName, methodAttr.displayName.text.data, methodAttr.displayName.text.length);
 	methodName[methodAttr.displayName.text.length] = '\0';
 
-	ServerAPIBase::Get()->jAPIBase_local = jAPIBase;
+	//ServerAPIBase::Get()->jAPIBase_local = jAPIBase;
 	if (requestedNewNodeId != NULL) {
 		reqNodeId = UA_NODEID_NUMERIC(1, requestedNewNodeId);
 	}
@@ -197,8 +238,17 @@ UA_NodeId ServerAPIBase::addMethod(UA_Server * server, UA_NodeId objectId, const
 		objectId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
 		UA_QUALIFIEDNAME(1, methodName),
-		methodAttr, &methodCallback,
+		methodAttr, &(jAPIBase->methodCallback),
 		1, &inputArgument, 1, &outputArgument, NULL, &nodeId);
+
+
+		ServerAPIBase::method_output m_output;
+		m_output.key = nodeId;
+	//	m_output.value = output;
+		m_output.api_local = jAPIBase;
+		ServerAPIBase::Get()->addOutput(m_output);
+	
+
 		return nodeId;
 }
 

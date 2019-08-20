@@ -10,17 +10,24 @@ class ServerAPIBase {
 
 private:
 	static ServerAPIBase *jAPIBase_local;
+	
+	size_t outputs_length = 1;
+	
+public:
 	struct method_output
 	{
 		UA_NodeId key;
-		UA_Variant value;
+		UA_Variant *value;
+		ServerAPIBase *api_local;
 	};
-public:
 	void *d;
-	UA_Variant *output;
+	
+	method_output  *methodOutputs;
+	
 	UA_Boolean running;
 	static ServerAPIBase * Get();
-
+	bool addOutput(method_output output);
+	int getNodeIdIndex(UA_NodeId nodeId);
 	static void stopHandler(int sig);
 
 	UA_Server *  createServerDefaultConfig(void); 
@@ -42,11 +49,17 @@ public:
 	 UA_NodeId getDataTypeNode(UA_Int32 typeId);
 	 UA_NodeId addMethod(UA_Server *server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId , UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
 
+	 static UA_StatusCode methodCallback(UA_Server *server,
+		 const UA_NodeId *sessionId, void *sessionHandle,
+		 const UA_NodeId *methodId, void *methodContext,
+		 const UA_NodeId *objectId, void *objectContext,
+		 size_t inputSize, const UA_Variant *input,
+		 size_t outputSize, UA_Variant *output);
 
 	 void setData(void *);
 	 void *getData();
-	 void setMethodOutput(UA_String output);
-
+	 void setMethodOutput(UA_NodeId methodId,UA_String output);
+	 
 	 virtual void monitored_itemChanged(const UA_NodeId *nodeId, const UA_Int32 value) {}
 	 virtual void methods_callback( const UA_NodeId *methodId, const UA_NodeId *objectId, UA_String input, UA_String output,ServerAPIBase *jAPIBase) {}
 
