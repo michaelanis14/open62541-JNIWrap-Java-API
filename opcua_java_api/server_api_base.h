@@ -38,8 +38,8 @@ public:
 
 	 void addMonitoredItem(UA_Server *server, UA_NodeId monitoredItemId, ServerAPIBase *jAPIBase);
 	
-	 UA_NodeId addObject(UA_Server *server, const UA_Int32 requestedNewNodeId, char* name);
-	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
+	 UA_NodeId addObject(UA_Server *server, UA_NodeId requestedNewNodeId, char* name);
+	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
 	 UA_NodeId manuallyDefineIMM(UA_Server *server);
 	 UA_NodeId manuallyDefineRobot(UA_Server *server);
 
@@ -47,7 +47,9 @@ public:
 	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, char * stringValue);
 	 UA_StatusCode writeVariable(UA_Server *server, UA_NodeId* nodeId, double  doubleValue);
 	 UA_NodeId getDataTypeNode(UA_Int32 typeId);
-	 UA_NodeId addMethod(UA_Server *server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId , UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
+	 UA_NodeId addMethod(UA_Server *server, UA_NodeId objectId, UA_NodeId requestedNewNodeId , UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase);
+
+
 
 	 static UA_StatusCode methodCallback(UA_Server *server,
 		 const UA_NodeId *sessionId, void *sessionHandle,

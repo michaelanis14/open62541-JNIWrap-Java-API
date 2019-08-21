@@ -46,6 +46,7 @@ void ServerAPIBase::setMethodOutput(UA_NodeId methodId, UA_String output)
 
 
 
+
 UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	const UA_NodeId *sessionId, void *sessionHandle,
 	const UA_NodeId *methodId, void *methodContext,
@@ -173,12 +174,12 @@ void ServerAPIBase::addMonitoredItem(UA_Server *server, UA_NodeId monitoredItemI
 	ServerAPIBase::Get()->addOutput(m_output);
 }
 
-UA_NodeId ServerAPIBase::addObject(UA_Server * server, const UA_Int32 requestedNewNodeId, char* name)
+UA_NodeId ServerAPIBase::addObject(UA_Server * server, UA_NodeId requestedNewNodeId, char* name)
 {
 	UA_NodeId immId; /* get the nodeid assigned by the server */
 	UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
 	oAttr.displayName = UA_LOCALIZEDTEXT("en-US", name);
-	UA_Server_addObjectNode(server, UA_NODEID_NUMERIC(1, requestedNewNodeId),
+	UA_Server_addObjectNode(server, requestedNewNodeId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
 		UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
 		UA_QUALIFIEDNAME(1, name), UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
@@ -186,14 +187,14 @@ UA_NodeId ServerAPIBase::addObject(UA_Server * server, const UA_Int32 requestedN
 	return immId;
 }
 
-UA_NodeId ServerAPIBase::addVariableNode(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel)
+UA_NodeId ServerAPIBase::addVariableNode(UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel)
 {
 	UA_NodeId nodeId;
 	UA_VariableAttributes attributes = UA_VariableAttributes_default;
 	UA_Variant_setScalar(&attributes.value, UA_new(&UA_TYPES[typeId]), &UA_TYPES[typeId]);
 	attributes.displayName = UA_LOCALIZEDTEXT("en-US", name);
 	attributes.accessLevel = accessLevel;
-	UA_Server_addVariableNode(server, UA_NODEID_NUMERIC(1, requestedNewNodeId), objectId,
+	UA_Server_addVariableNode(server,  requestedNewNodeId, objectId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
 		UA_QUALIFIEDNAME(1, name),
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attributes, NULL, &nodeId);
@@ -227,22 +228,15 @@ UA_NodeId ServerAPIBase::getDataTypeNode(UA_Int32 typeId)
 	return UA_TYPES[typeId].typeId;
 }
 
-UA_NodeId ServerAPIBase::addMethod(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase)
+UA_NodeId ServerAPIBase::addMethod(UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr, ServerAPIBase *jAPIBase)
 {
 	UA_NodeId nodeId;
-	UA_NodeId reqNodeId;
+	
 	char* methodName = (char*)UA_malloc(sizeof(char)*methodAttr.displayName.text.length + 1);
 	memcpy(methodName, methodAttr.displayName.text.data, methodAttr.displayName.text.length);
 	methodName[methodAttr.displayName.text.length] = '\0';
-
-	//ServerAPIBase::Get()->jAPIBase_local = jAPIBase;
-	if (requestedNewNodeId != NULL) {
-		reqNodeId = UA_NODEID_NUMERIC(1, requestedNewNodeId);
-	}
-	else {
-		reqNodeId = UA_NODEID_STRING(1, methodName);
-	}
-	UA_Server_addMethodNode(server, reqNodeId,
+	
+	UA_Server_addMethodNode(server, requestedNewNodeId,
 		objectId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
 		UA_QUALIFIEDNAME(1, methodName),
@@ -264,11 +258,11 @@ UA_NodeId ServerAPIBase::manuallyDefineIMM(UA_Server *server) {
 	UA_NodeId statusNodeId;
 	UA_NodeId immId; /* get the nodeid assigned by the server */
 
-	immId = addObject(server, 10, "IMM");
-	addVariableNode(server, immId, 11, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-	addVariableNode(server, immId, 12, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-	addVariableNode(server, immId, 13, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
-	statusNodeId = addVariableNode(server, immId, 14, "Status", UA_TYPES_INT32, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
+	immId = addObject(server, UA_NODEID_NUMERIC(1, 10), "IMM");
+	addVariableNode(server, immId, UA_NODEID_NUMERIC(1, 11) , "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+	addVariableNode(server, immId, UA_NODEID_NUMERIC(1, 12), "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+	addVariableNode(server, immId, UA_NODEID_NUMERIC(1, 13), "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
+	statusNodeId = addVariableNode(server, immId, UA_NODEID_NUMERIC(1, 14), "Status", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
 
 	writeVariable(server, &statusNodeId, -1);
 
@@ -280,11 +274,11 @@ UA_NodeId ServerAPIBase::manuallyDefineRobot(UA_Server * server)
 	UA_NodeId statusNodeId;
 	UA_NodeId robotId; /* get the nodeid assigned by the server */
 
-	robotId = addObject(server, 20, "Robot");
-	addVariableNode(server, robotId, 21, "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-	addVariableNode(server, robotId, 22, "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
-	addVariableNode(server, robotId, 23, "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
-	statusNodeId = addVariableNode(server, robotId, 24, "Robot_Status", UA_TYPES_INT32, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
+	robotId = addObject(server, UA_NODEID_NUMERIC(1, 20), "Robot");
+	addVariableNode(server, robotId, UA_NODEID_NUMERIC(1, 21), "ManufacturerName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+	addVariableNode(server, robotId, UA_NODEID_NUMERIC(1, 22), "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
+	addVariableNode(server, robotId, UA_NODEID_NUMERIC(1, 23), "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
+	statusNodeId = addVariableNode(server, robotId, UA_NODEID_NUMERIC(1, 24), "Robot_Status", UA_TYPES_INT32, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
 
 	writeVariable(server, &statusNodeId, 0);
 
