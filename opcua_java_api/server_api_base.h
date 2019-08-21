@@ -36,7 +36,7 @@ public:
 
 	 UA_StatusCode  runServer(UA_Server * server);
 
-	 void addMonitoredItem(UA_Server *server, UA_NodeId immId, ServerAPIBase *jAPIBase);
+	 void addMonitoredItem(UA_Server *server, UA_NodeId monitoredItemId, ServerAPIBase *jAPIBase);
 	
 	 UA_NodeId addObject(UA_Server *server, const UA_Int32 requestedNewNodeId, char* name);
 	 UA_NodeId addVariableNode(UA_Server * server, UA_NodeId objectId, const UA_Int32 requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
@@ -55,6 +55,10 @@ public:
 		 const UA_NodeId *objectId, void *objectContext,
 		 size_t inputSize, const UA_Variant *input,
 		 size_t outputSize, UA_Variant *output);
+	 static void dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
+		 void *monitoredItemContext, const UA_NodeId *nodeId,
+		 void *nodeContext, UA_UInt32 attributeId,
+		 const UA_DataValue *value);
 
 	 void setData(void *);
 	 void *getData();

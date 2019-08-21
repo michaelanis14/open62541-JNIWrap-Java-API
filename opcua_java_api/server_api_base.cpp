@@ -11,16 +11,21 @@ void ServerAPIBase::stopHandler(int sig)
 	ServerAPIBase::Get()->running = false;
 }
 
-static void dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
+void ServerAPIBase::dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
 	void *monitoredItemContext, const UA_NodeId *nodeId,
 	void *nodeContext, UA_UInt32 attributeId,
 	const UA_DataValue *value) {
 
 	// ServerAPIBase::Get()->monitored_itemChanged(nodeId, value);
 
-	ServerAPIBase::Get()->monitored_itemChanged(nodeId, *(UA_Int32*)value->value.data);
-
-	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server Received Notification on Monitored Item ");
+	int nodeOutputIndex = ServerAPIBase::Get()->getNodeIdIndex(*nodeId);
+	if (nodeOutputIndex != -1) {
+		ServerAPIBase* serverApi = ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].api_local;
+		ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].value = (UA_Variant*)value->value.data;
+		serverApi->monitored_itemChanged(nodeId, *(UA_Int32*)value->value.data);
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server Received Notification on Monitored Item ");
+	}
+	else UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server received notification but coudlnt find the monitored item callback. ");
 }
 void ServerAPIBase::setData(void *d) {
 	ServerAPIBase::Get()->d = d;
@@ -55,14 +60,13 @@ UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	
 	//serverApi->output = output;
 	int nodeOutputIndex = ServerAPIBase::Get()->getNodeIdIndex(*methodId);
+	if(nodeOutputIndex != -1){
 	ServerAPIBase* serverApi = ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].api_local;
-	
 	ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].value = output;
-	
-
 	serverApi->methods_callback(methodId, objectId, *inputStr, *inputStr, serverApi);
-	
 	return UA_STATUSCODE_GOOD;
+	}
+	return UA_STATUSCODE_BADNOTFOUND;
 }
 
 
@@ -104,7 +108,6 @@ bool ServerAPIBase::addOutput(method_output output)
 
 int ServerAPIBase::getNodeIdIndex(UA_NodeId nodeId)
 {
-	
 	for (int i = 0; i < outputs_length; i++) {
 		if (UA_NodeId_equal(&methodOutputs[i].key, &nodeId)){
 			UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "getNodeIdIndex, id %u \n", i);
@@ -113,7 +116,6 @@ int ServerAPIBase::getNodeIdIndex(UA_NodeId nodeId)
 	}
 	return -1;
 }
-
 
 UA_Server * ServerAPIBase::createServerDefaultConfig(void)
 {
@@ -156,13 +158,19 @@ UA_StatusCode ServerAPIBase::runServer(UA_Server * server)
 
 }
 
-void ServerAPIBase::addMonitoredItem(UA_Server *server, UA_NodeId immId, ServerAPIBase *jAPIBase) {
+void ServerAPIBase::addMonitoredItem(UA_Server *server, UA_NodeId monitoredItemId, ServerAPIBase *jAPIBase) {
 	UA_MonitoredItemCreateRequest monRequest =
-		UA_MonitoredItemCreateRequest_default(immId);
-	jAPIBase_local = jAPIBase;
+		UA_MonitoredItemCreateRequest_default(monitoredItemId);
+	//jAPIBase_local = jAPIBase;
 	monRequest.requestedParameters.samplingInterval = 100.0; /* 100 ms interval */
 	UA_Server_createDataChangeMonitoredItem(server, UA_TIMESTAMPSTORETURN_SOURCE,
-		monRequest, NULL, dataChangeNotificationCallback);
+		monRequest, NULL, jAPIBase->dataChangeNotificationCallback);
+
+	ServerAPIBase::method_output m_output;
+	m_output.key = monitoredItemId;
+	//	m_output.value = output;
+	m_output.api_local = jAPIBase;
+	ServerAPIBase::Get()->addOutput(m_output);
 }
 
 UA_NodeId ServerAPIBase::addObject(UA_Server * server, const UA_Int32 requestedNewNodeId, char* name)
