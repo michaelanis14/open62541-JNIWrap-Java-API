@@ -20,37 +20,38 @@ public:
 
 	static void inactivityCallback(UA_Client *client);
 
-	static UA_Client * initClient();
+	static UA_Client * InitClient();
 
-	static UA_StatusCode clientConnect(ClientAPIBase * jClientAPIBase, UA_Client * client, char* serverUrl);
+	static UA_StatusCode ClientConnect(ClientAPIBase * jClientAPIBase, UA_Client * client, char* serverUrl);
 
 	static void handler_TheStatusChanged(UA_Client *client, UA_UInt32 subId, void *subContext,
 		UA_UInt32 monId, void *monContext, UA_DataValue *value);
 
-	static UA_NodeId nodeIter(UA_NodeId childId, UA_Client *client, char* nodeName);
+	static UA_NodeId NodeIter(UA_NodeId childId, UA_Client *client, char* nodeName);
 
-	static UA_NodeId getNodeByName(UA_Client *client, char* nodeName);
-
-
-	static UA_UInt32 clientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID);
+	static UA_NodeId GetNodeByName(UA_Client *client, char* nodeName);
 
 
+	static UA_UInt32 ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID);
 
-	static void clientRemoveSub(UA_Client *client, UA_UInt32 subId);
+	static UA_Variant SetGetVariant(UA_Variant * value);
 
-	static UA_Int32 clientReadValue(UA_Client *client, UA_NodeId theStatusNodeID);
+	static void ClientRemoveSub(UA_Client *client, UA_UInt32 subId);
 
-	static UA_StatusCode clientWriteValue(UA_Client *client, UA_NodeId theStatusNodeID, UA_Int32 value);
+	static UA_Variant * ClientReadValue(UA_Client *client, UA_NodeId nodeID);
+	static UA_Int32   ClientReadIntValue(UA_Client *client, UA_NodeId nodeID);
+	static UA_StatusCode ClientWriteValue( char* serverUrl, UA_NodeId nodeId, UA_Int32 value);
 
 	static void
 		deleteSubscriptionCallback(UA_Client *client, UA_UInt32 subscriptionId, void *subscriptionContext);
 
 	static void
 		subscriptionInactivityCallback(UA_Client *client, UA_UInt32 subId, void *subContext);
-	static char* getMethodOutput();
-	static UA_String call_method(UA_Client *client, const UA_NodeId objectId,
+	static char* GetMethodOutput();
+	static UA_String CallMethod(UA_Client *client, const UA_NodeId objectId,
 			const UA_NodeId methodId, char* argInputString);
 
+	
 	virtual void monitored_itemChanged(UA_NodeId nodeId, const UA_Int32 value) {}
 	virtual void client_connected(ClientAPIBase * jClientAPIBase, UA_Client *client, char* serverUrl) {}
 	virtual void methods_callback(const UA_NodeId objectId,const UA_NodeId methodId, UA_String input, UA_String output, ClientAPIBase *jAPIBase) {}

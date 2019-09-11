@@ -154,6 +154,7 @@
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\client_api_base.h" />
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\server_api_base.h" />
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\build\swing\types_map.h" />
     <ClInclude Include="open62541.h" />
   </ItemGroup>
   <ItemGroup>
