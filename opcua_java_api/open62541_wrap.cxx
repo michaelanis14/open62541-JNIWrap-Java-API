@@ -1224,7 +1224,7 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1AddMonitored
 }
 
 
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1AddObject(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jobject jarg2_, jstring jarg3) {
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1AddObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jobject jarg2_, jstring jarg3) {
   jlong jresult = 0 ;
   UA_Server *arg1 = (UA_Server *) 0 ;
   UA_NodeId arg2 ;
@@ -1250,6 +1250,45 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1AddObject(J
   result = ServerAPIBase::AddObject(arg1,arg2,arg3);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
   if (arg3) jenv->ReleaseStringUTFChars(jarg3, (const char *)arg3);
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1AddObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jstring jarg4) {
+  jlong jresult = 0 ;
+  UA_Server *arg1 = (UA_Server *) 0 ;
+  UA_NodeId arg2 ;
+  UA_NodeId arg3 ;
+  char *arg4 = (char *) 0 ;
+  UA_NodeId *argp2 ;
+  UA_NodeId *argp3 ;
+  UA_NodeId result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg2_;
+  (void)jarg3_;
+  arg1 = *(UA_Server **)&jarg1; 
+  argp2 = *(UA_NodeId **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
+    return 0;
+  }
+  arg2 = *argp2; 
+  argp3 = *(UA_NodeId **)&jarg3; 
+  if (!argp3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
+    return 0;
+  }
+  arg3 = *argp3; 
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)jenv->GetStringUTFChars(jarg4, 0);
+    if (!arg4) return 0;
+  }
+  result = ServerAPIBase::AddObject(arg1,arg2,arg3,arg4);
+  *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
+  if (arg4) jenv->ReleaseStringUTFChars(jarg4, (const char *)arg4);
   return jresult;
 }
 

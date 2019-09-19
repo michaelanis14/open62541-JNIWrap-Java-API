@@ -166,6 +166,7 @@ UA_UInt32 ClientAPIBase::ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Clie
 	UA_MonitoredItemCreateRequest monRequest =
 		UA_MonitoredItemCreateRequest_default(nodeID);
 	jClientAPIBase_local = jClientAPIBase;
+	UA_NodeId_copy(&nodeID, &jClientAPIBase_local->current_nodeId);
 	monRequest.requestedParameters.samplingInterval = 100; /* 100 ms interval */
 	UA_MonitoredItemCreateResult monResponse =
 		UA_Client_MonitoredItems_createDataChange(client, response.subscriptionId,

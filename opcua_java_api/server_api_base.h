@@ -38,6 +38,7 @@ public:
 	static  void AddMonitoredItem(ServerAPIBase *jAPIBase, UA_Server *server, UA_NodeId monitoredItemId );
 	
 	static  UA_NodeId AddObject(UA_Server *server, UA_NodeId requestedNewNodeId, char* name);
+	static  UA_NodeId AddObject(UA_Server *server, UA_NodeId parent, UA_NodeId requestedNewNodeId, char* name);
 	static  UA_NodeId AddVariableNode(UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel);
 	static  UA_NodeId ManuallyDefineIMM(UA_Server *server);
 	static UA_NodeId ManuallyDefineRobot(UA_Server *server);

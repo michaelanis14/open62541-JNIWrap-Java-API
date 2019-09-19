@@ -181,6 +181,19 @@ UA_NodeId ServerAPIBase::AddObject(UA_Server * server, UA_NodeId requestedNewNod
 	return immId;
 }
 
+UA_NodeId ServerAPIBase::AddObject(UA_Server * server, UA_NodeId parent, UA_NodeId requestedNewNodeId, char * name)
+{
+	UA_NodeId objId; /* get the nodeid assigned by the server */
+	UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
+	oAttr.displayName = UA_LOCALIZEDTEXT("en-US", name);
+	UA_Server_addObjectNode(server, requestedNewNodeId,
+		parent,
+		UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+		UA_QUALIFIEDNAME(1, name), UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
+		oAttr, NULL, &objId);
+	return objId;
+}
+
 UA_NodeId ServerAPIBase::AddVariableNode(UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, char * name, UA_Int32 typeId, UA_Int32 accessLevel)
 {
 	UA_NodeId nodeId;
@@ -206,7 +219,13 @@ UA_StatusCode ServerAPIBase::WriteVariable(UA_Server *server, UA_NodeId* nodeId,
 UA_StatusCode ServerAPIBase::WriteVariable(UA_Server *server, UA_NodeId* nodeId, char * stringValue) {
 	UA_Variant myVar;
 	UA_Variant_init(&myVar);
-	UA_Variant_setScalar(&myVar, stringValue, &UA_TYPES[UA_TYPES_STRING]);
+	UA_String string_value;
+	UA_String_init(&string_value);
+
+	string_value.length = strlen(stringValue);
+	string_value.data = (UA_Byte *)stringValue;
+
+	UA_Variant_setScalar(&myVar, &string_value, &UA_TYPES[UA_TYPES_STRING]);
 	return UA_Server_writeValue(server, (*nodeId), myVar);
 }
 
