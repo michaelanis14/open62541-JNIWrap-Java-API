@@ -5,9 +5,22 @@ class ClientAPIBase
 {
 private:
 	static ClientAPIBase *jClientAPIBase_local;
+	size_t outputs_length = 1;
 
 public:
-	UA_NodeId current_nodeId;
+	struct method_output
+	{
+		UA_UInt32 subId;
+		UA_NodeId key;
+		UA_Variant *value;
+		ClientAPIBase *api_local;
+	};
+
+	method_output  *methodOutputs;
+	static bool AddOutput(method_output output);
+	static int GetSubIdIndex(UA_UInt32 subId);
+
+//	UA_NodeId current_nodeId;
 	UA_ClientConfig *clientConfig;
 	UA_Boolean running = true;
 	char* output;

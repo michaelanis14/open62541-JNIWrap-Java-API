@@ -62,7 +62,18 @@ void ClientAPIBase::handler_TheStatusChanged(UA_Client *client, UA_UInt32 subId,
 //	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
 //		"The Status has changed from the client!', id %x , value: %x",
 //		(ClientAPIBase::Get()->current_nodeId.identifier.numeric), *(UA_Int32*)value->value.data);
-	ClientAPIBase::Get()->monitored_itemChanged((ClientAPIBase::Get()->current_nodeId), *(UA_Int32*)value->value.data);
+
+	int subOutputIndex = ClientAPIBase::Get()->GetSubIdIndex(subId);
+	if (subOutputIndex != -1) {
+		ClientAPIBase* clientApi = ClientAPIBase::Get()->methodOutputs[subOutputIndex].api_local;
+		ClientAPIBase::Get()->methodOutputs[subOutputIndex].value = (UA_Variant*)value->value.data;
+		clientApi->monitored_itemChanged(ClientAPIBase::Get()->methodOutputs[subOutputIndex].key, *(UA_Int32*)value->value.data);
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Client Received Notification on Subscribed/Monitored Item\n");
+	}
+	else {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "failed to to get subId index in outputs array\n");
+
+	}
 
 }
 
@@ -166,18 +177,26 @@ UA_UInt32 ClientAPIBase::ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Clie
 	UA_MonitoredItemCreateRequest monRequest =
 		UA_MonitoredItemCreateRequest_default(nodeID);
 	jClientAPIBase_local = jClientAPIBase;
-	UA_NodeId_copy(&nodeID, &jClientAPIBase_local->current_nodeId);
+//	UA_NodeId_copy(&nodeID, &jClientAPIBase_local->current_nodeId);
 	monRequest.requestedParameters.samplingInterval = 100; /* 100 ms interval */
 	UA_MonitoredItemCreateResult monResponse =
 		UA_Client_MonitoredItems_createDataChange(client, response.subscriptionId,
 			UA_TIMESTAMPSTORETURN_BOTH,
 			monRequest, NULL, jClientAPIBase_local->handler_TheStatusChanged, NULL);
 
-	if (monResponse.statusCode == UA_STATUSCODE_GOOD)
+	if (monResponse.statusCode == UA_STATUSCODE_GOOD){
+
+		ClientAPIBase::method_output m_output;
+		m_output.subId = subId;
+		m_output.key = nodeID;
+		//	m_output.value = output;
+		m_output.api_local = jClientAPIBase;
+		ClientAPIBase::Get()->AddOutput(m_output);
+
 		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
 			"Monitoring ', id %u",
 			monResponse.monitoredItemId);
-	else {
+	}else {
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "failed to subscribe to node with error: %x\n", monResponse.statusCode);
 		return -1;
 
@@ -334,4 +353,30 @@ char* ClientAPIBase::GetMethodOutput()
 	return ClientAPIBase::Get()->output;
 
 
+}
+
+bool ClientAPIBase::AddOutput(method_output output)
+{
+	if (ClientAPIBase::Get()->outputs_length != 1) {
+		method_output* temp = new method_output[ClientAPIBase::Get()->outputs_length];
+		memcpy(temp, ClientAPIBase::Get()->methodOutputs, ClientAPIBase::Get()->outputs_length * sizeof(method_output));
+		delete[] ClientAPIBase::Get()->methodOutputs;
+		ClientAPIBase::Get()->methodOutputs = temp;
+	}
+	else {
+		ClientAPIBase::Get()->methodOutputs = new method_output[ClientAPIBase::Get()->outputs_length];
+	}
+	ClientAPIBase::Get()->methodOutputs[ClientAPIBase::Get()->outputs_length - 1] = output;
+	ClientAPIBase::Get()->outputs_length++;
+	return true;
+}
+int ClientAPIBase::GetSubIdIndex(UA_UInt32 subId)
+{
+	for (int i = 0; i < ClientAPIBase::Get()->outputs_length; i++) {
+		if (ClientAPIBase::Get()->methodOutputs[i].subId == subId) {
+			//UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "getNodeIdIndex, id %u \n", i);
+			return i;
+		}
+	}
+	return -1;
 }

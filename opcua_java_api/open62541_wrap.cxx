@@ -1124,27 +1124,6 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1Get(JNIEnv 
 }
 
 
-SWIGEXPORT jint JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1GetNodeIdIndex(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jint jresult = 0 ;
-  UA_NodeId arg1 ;
-  UA_NodeId *argp1 ;
-  int result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  argp1 = *(UA_NodeId **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null UA_NodeId");
-    return 0;
-  }
-  arg1 = *argp1; 
-  result = (int)ServerAPIBase::GetNodeIdIndex(arg1);
-  jresult = (jint)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1stopHandler(JNIEnv *jenv, jclass jcls, jint jarg1) {
   int arg1 ;
   

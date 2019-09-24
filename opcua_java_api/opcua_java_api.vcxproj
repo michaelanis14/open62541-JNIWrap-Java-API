@@ -152,17 +152,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\build\swing\client_api_base.h" />
-    <ClInclude Include="..\..\..\..\..\..\..\build\swing\server_api_base.h" />
     <ClInclude Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.h" />
-    <ClInclude Include="..\..\..\..\..\..\..\build\swing\types_map.h" />
+    <ClInclude Include="client_api_base.h" />
     <ClInclude Include="open62541.h" />
+    <ClInclude Include="server_api_base.h" />
+    <ClInclude Include="types_map.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\build\swing\client_api_base.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\..\build\swing\server_api_base.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\..\build\swing\open62541_wrap.cxx" />
+    <ClCompile Include="client_api_base.cpp" />
     <ClCompile Include="open62541.c" />
+    <ClCompile Include="open62541_wrap.cxx" />
+    <ClCompile Include="server_api_base.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
