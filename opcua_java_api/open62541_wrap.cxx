@@ -1635,35 +1635,6 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1change_1owne
 }
 
 
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1current_1nodeId_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
-  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
-  UA_NodeId *arg2 = (UA_NodeId *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  (void)jarg2_;
-  arg1 = *(ClientAPIBase **)&jarg1; 
-  arg2 = *(UA_NodeId **)&jarg2; 
-  if (arg1) (arg1)->current_nodeId = *arg2;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1current_1nodeId_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
-  UA_NodeId *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(ClientAPIBase **)&jarg1; 
-  result = (UA_NodeId *)& ((arg1)->current_nodeId);
-  *(UA_NodeId **)&jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1running_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
   UA_Boolean arg2 ;
