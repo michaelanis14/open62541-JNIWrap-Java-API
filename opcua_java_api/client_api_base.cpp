@@ -300,12 +300,16 @@ void ClientAPIBase::subscriptionInactivityCallback(UA_Client *client, UA_UInt32 
 	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Inactivity for subscription %u", subId);
 }
 
-UA_String ClientAPIBase::CallMethod(UA_Client * client, const UA_NodeId objectId, const UA_NodeId methodId, char* argInputString)
+UA_String ClientAPIBase::CallMethod(char* serverUrl, const UA_NodeId objectId, const UA_NodeId methodId, char* argInputString)
 {
 	//UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "call_method .. starting");
 	UA_StatusCode client_call_state;
-	
+	//char* serverUrl = "opc.tcp://localhost:4840/";
 	/* Call a remote method */
+	UA_Client * client = UA_Client_new();
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	client_call_state = UA_Client_connect(client, serverUrl);
+
 	UA_Variant input;
 	UA_String argInputStringg = UA_STRING(argInputString);
 	UA_String out = UA_STRING("-1");
@@ -318,7 +322,7 @@ UA_String ClientAPIBase::CallMethod(UA_Client * client, const UA_NodeId objectId
 		UA_Variant_clear(&input);
 		return out;
 	}
-		
+
 
 	client_call_state = UA_Client_call(client, objectId,
 		methodId, 1, &input, &outputSize, &output);
@@ -331,19 +335,76 @@ UA_String ClientAPIBase::CallMethod(UA_Client * client, const UA_NodeId objectId
 			goto cleaning;
 		}
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was successful, and %lu returned values available. %d \n",
-			(unsigned long)outputSize,output->type->typeName);
+			(unsigned long)outputSize, output->type->typeName);
 		UA_String *strOutput = (UA_String*)(output)->data;
 		out = *strOutput;
 	}
 	else {
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, and %x returned values available.\n", client_call_state);
 	}
-
+	UA_Client_delete(client);
 cleaning:
 	//UA_Array_delete(output, outputSize, &UA_TYPES[UA_TYPES_VARIANT]);
 	//UA_Variant_clear(&input);
 
 	return out;
+}
+
+UA_String ClientAPIBase::CallMethod(char* serverUrl, const UA_NodeId objectId, const UA_NodeId methodId, UA_Int32 argInput[], UA_Int32 arraySize)
+{
+	UA_Variant input;
+	UA_Variant_init(&input);
+	/* Copy the input array */
+	UA_StatusCode retval = UA_Variant_setArrayCopy(&input, argInput, arraySize,
+		&UA_TYPES[UA_TYPES_INT32]);
+	if (retval != UA_STATUSCODE_GOOD)
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, and %x returned values available.\n", retval);
+
+
+	//UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "call_method .. starting");
+	UA_StatusCode client_call_state;
+	//char* serverUrl = "opc.tcp://localhost:4840/";
+	/* Call a remote method */
+	UA_Client * client = UA_Client_new();
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	client_call_state = UA_Client_connect(client, serverUrl);
+
+	
+	UA_String out = UA_STRING("-1");
+	size_t outputSize;
+	UA_Variant *output;
+
+	if (!client && UA_NodeId_isNull(&methodId) && UA_NodeId_isNull(&objectId)) {
+		UA_Variant_clear(&input);
+		return out;
+	}
+
+
+	client_call_state = UA_Client_call(client, objectId,
+		methodId, 1, &input, &outputSize, &output);
+
+	UA_Client_run_iterate(client, 0);
+
+	if (client_call_state == UA_STATUSCODE_GOOD) {
+		if (UA_Variant_isEmpty(output)) {
+			UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful Empty return, and %x returned values available.\n", client_call_state);
+			goto cleaning;
+		}
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was successful, and %lu returned values available. %d \n",
+			(unsigned long)outputSize, output->type->typeName);
+		UA_String *strOutput = (UA_String*)(output)->data;
+		out = *strOutput;
+	}
+	else {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, and %x returned values available.\n", client_call_state);
+	}
+	UA_Client_delete(client);
+cleaning:
+	//UA_Array_delete(output, outputSize, &UA_TYPES[UA_TYPES_VARIANT]);
+	//UA_Variant_clear(&input);
+
+	return out;
+	
 }
 
 char* ClientAPIBase::GetMethodOutput()
@@ -370,6 +431,7 @@ bool ClientAPIBase::AddOutput(method_output output)
 	ClientAPIBase::Get()->outputs_length++;
 	return true;
 }
+
 int ClientAPIBase::GetSubIdIndex(UA_UInt32 subId)
 {
 	for (int i = 0; i < ClientAPIBase::Get()->outputs_length; i++) {
@@ -379,4 +441,12 @@ int ClientAPIBase::GetSubIdIndex(UA_UInt32 subId)
 		}
 	}
 	return -1;
+}
+
+void  ClientAPIBase::arrayTest(UA_Int32 outputArray[]) {
+	//UA_Int32 *outputArray = (UA_Int32*)output->data;
+	for (size_t i = 0; i < 3; i++)
+		
+	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "getNodeIdIndex, id %u \n", outputArray[i]);
+
 }

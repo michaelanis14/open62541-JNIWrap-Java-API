@@ -6,8 +6,10 @@ class ClientAPIBase
 private:
 	static ClientAPIBase *jClientAPIBase_local;
 	size_t outputs_length = 1;
-
+	
 public:
+
+
 	struct method_output
 	{
 		UA_UInt32 subId;
@@ -61,13 +63,18 @@ public:
 	static void
 		subscriptionInactivityCallback(UA_Client *client, UA_UInt32 subId, void *subContext);
 	static char* GetMethodOutput();
-	static UA_String CallMethod(UA_Client *client, const UA_NodeId objectId,
+	static UA_String CallMethod(char* serverUrl, const UA_NodeId objectId,
 			const UA_NodeId methodId, char* argInputString);
 
-	
+	static UA_String CallMethod(char* serverUrl, const UA_NodeId objectId,
+		const UA_NodeId methodId, UA_Int32 argInput[], UA_Int32 arraySize);
+
 	virtual void monitored_itemChanged(UA_NodeId nodeId, const UA_Int32 value) {}
 	virtual void client_connected(ClientAPIBase * jClientAPIBase, UA_Client *client, char* serverUrl) {}
 	virtual void methods_callback(const UA_NodeId objectId,const UA_NodeId methodId, UA_String input, UA_String output, ClientAPIBase *jAPIBase) {}
+
+
+	void  arrayTest(UA_Int32 outputArray[]);
 
 	virtual ~ClientAPIBase() {}
 };

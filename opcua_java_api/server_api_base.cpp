@@ -28,6 +28,7 @@ void ServerAPIBase::dataChangeNotificationCallback(UA_Server *server, UA_UInt32 
 	else UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Server received notification but coudlnt find the monitored item callback. ");
 }
 
+
 void ServerAPIBase::SetMethodOutput(UA_NodeId methodId, UA_String output)
 {
 	ServerAPIBase* serverApi = ServerAPIBase::Get();
@@ -48,17 +49,17 @@ UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	size_t outputSize, UA_Variant *output) {
 	/*
 */
-	
+
 	UA_String *inputStr = (UA_String*)input->data;
 
-	
+
 	//serverApi->output = output;
 	int nodeOutputIndex = ServerAPIBase::Get()->GetNodeIdIndex(*methodId);
-	if(nodeOutputIndex != -1){
-	ServerAPIBase* serverApi = ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].api_local;
-	ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].value = output;
-	serverApi->methods_callback(methodId, objectId, *inputStr, *inputStr, serverApi);
-	return UA_STATUSCODE_GOOD;
+	if (nodeOutputIndex != -1) {
+		ServerAPIBase* serverApi = ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].api_local;
+		ServerAPIBase::Get()->methodOutputs[nodeOutputIndex].value = output;
+		serverApi->methods_callback(methodId, objectId, *inputStr, *inputStr, serverApi);
+		return UA_STATUSCODE_GOOD;
 	}
 	return UA_STATUSCODE_BADNOTFOUND;
 }
@@ -75,7 +76,7 @@ ServerAPIBase * ServerAPIBase::Get()
 	if (jAPIBase_local == 0) {
 		//printf("New Refrence SERVER API");
 		jAPIBase_local = new ServerAPIBase();
-		
+
 	}//else printf("Keeping Refrence SERVER API");
 
 	return jAPIBase_local;
@@ -83,11 +84,11 @@ ServerAPIBase * ServerAPIBase::Get()
 
 bool ServerAPIBase::AddOutput(method_output output)
 {
-		if(jAPIBase_local->outputs_length != 1){
-	method_output* temp = new method_output[jAPIBase_local->outputs_length];
-	memcpy(temp, ServerAPIBase::Get()->methodOutputs, jAPIBase_local->outputs_length * sizeof(method_output));
-	delete[] ServerAPIBase::Get()->methodOutputs;
-	ServerAPIBase::Get()->methodOutputs = temp;
+	if (jAPIBase_local->outputs_length != 1) {
+		method_output* temp = new method_output[jAPIBase_local->outputs_length];
+		memcpy(temp, ServerAPIBase::Get()->methodOutputs, jAPIBase_local->outputs_length * sizeof(method_output));
+		delete[] ServerAPIBase::Get()->methodOutputs;
+		ServerAPIBase::Get()->methodOutputs = temp;
 	}
 	else {
 		jAPIBase_local->methodOutputs = new method_output[jAPIBase_local->outputs_length];
@@ -100,7 +101,7 @@ bool ServerAPIBase::AddOutput(method_output output)
 int ServerAPIBase::GetNodeIdIndex(UA_NodeId nodeId)
 {
 	for (int i = 0; i < ServerAPIBase::Get()->outputs_length; i++) {
-		if (UA_NodeId_equal(&ServerAPIBase::Get()->methodOutputs[i].key, &nodeId)){
+		if (UA_NodeId_equal(&ServerAPIBase::Get()->methodOutputs[i].key, &nodeId)) {
 			//UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "getNodeIdIndex, id %u \n", i);
 			return i;
 		}
@@ -201,7 +202,7 @@ UA_NodeId ServerAPIBase::AddVariableNode(UA_Server * server, UA_NodeId objectId,
 	UA_Variant_setScalar(&attributes.value, UA_new(&UA_TYPES[typeId]), &UA_TYPES[typeId]);
 	attributes.displayName = UA_LOCALIZEDTEXT("en-US", name);
 	attributes.accessLevel = accessLevel;
-	UA_Server_addVariableNode(server,  requestedNewNodeId, objectId,
+	UA_Server_addVariableNode(server, requestedNewNodeId, objectId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT),
 		UA_QUALIFIEDNAME(1, name),
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attributes, NULL, &nodeId);
@@ -241,15 +242,15 @@ UA_NodeId ServerAPIBase::GetDataTypeNode(UA_Int32 typeId)
 	return UA_TYPES[typeId].typeId;
 }
 
-UA_NodeId ServerAPIBase::AddMethod(ServerAPIBase *jAPIBase,UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr)
+UA_NodeId ServerAPIBase::AddMethod(ServerAPIBase *jAPIBase, UA_Server * server, UA_NodeId objectId, UA_NodeId requestedNewNodeId, UA_Argument inputArgument, UA_Argument outputArgument, UA_MethodAttributes methodAttr)
 {
 	UA_NodeId nodeId;
-	
+
 	char* methodName = (char*)UA_malloc(sizeof(char)*methodAttr.displayName.text.length + 1);
 	memcpy(methodName, methodAttr.displayName.text.data, methodAttr.displayName.text.length);
 	methodName[methodAttr.displayName.text.length] = '\0';
-	
-	UA_Server_addMethodNode(server, requestedNewNodeId,
+
+		UA_Server_addMethodNode(server, requestedNewNodeId,
 		objectId,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
 		UA_QUALIFIEDNAME(1, methodName),
@@ -257,14 +258,53 @@ UA_NodeId ServerAPIBase::AddMethod(ServerAPIBase *jAPIBase,UA_Server * server, U
 		1, &inputArgument, 1, &outputArgument, NULL, &nodeId);
 
 
-		ServerAPIBase::method_output m_output;
-		m_output.key = nodeId;
+	ServerAPIBase::method_output m_output;
+	m_output.key = nodeId;
 	//	m_output.value = output;
-		m_output.api_local = jAPIBase;
-		ServerAPIBase::Get()->AddOutput(m_output);
-	
+	m_output.api_local = jAPIBase;
+	ServerAPIBase::Get()->AddOutput(m_output);
 
-		return nodeId;
+
+	return nodeId;
+}
+
+UA_NodeId ServerAPIBase::AddArrayMethod(ServerAPIBase *jAPIBase, UA_Server *server, UA_NodeId objectId, UA_NodeId requestedNewNodeId
+	, UA_Argument outputArgument, UA_MethodAttributes methodAttr, char * name, char * description, int typeId, UA_UInt32 pDimension){
+	UA_NodeId nodeId;
+
+	char* methodName = (char*)UA_malloc(sizeof(char)*methodAttr.displayName.text.length + 1);
+	memcpy(methodName, methodAttr.displayName.text.data, methodAttr.displayName.text.length);
+	methodName[methodAttr.displayName.text.length] = '\0';
+
+	UA_Argument inputArguments[1];
+	UA_Argument_init(&inputArguments[0]);
+	inputArguments[0].description = UA_LOCALIZEDTEXT("en-US", description);
+	inputArguments[0].name = UA_STRING(name);
+	inputArguments[0].dataType = UA_TYPES[typeId].typeId;
+	inputArguments[0].valueRank = UA_VALUERANK_ONE_DIMENSION;
+	UA_UInt32 pInputDimension = pDimension;
+	inputArguments[0].arrayDimensionsSize = 1;
+	inputArguments[0].arrayDimensions = &pInputDimension;
+
+
+	//UA_Argument_copy(&inputArgument, &inputArguments[0]);
+
+	UA_Server_addMethodNode(server, requestedNewNodeId,
+		objectId,
+		UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
+		UA_QUALIFIEDNAME(1, methodName),
+		methodAttr, &(jAPIBase->methodCallback),
+		1, &inputArguments[0], 1, &outputArgument, NULL, &nodeId);
+
+
+	ServerAPIBase::method_output m_output;
+	m_output.key = nodeId;
+	//	m_output.value = output;
+	m_output.api_local = jAPIBase;
+	ServerAPIBase::Get()->AddOutput(m_output);
+
+
+	return nodeId;
 }
 
 UA_NodeId ServerAPIBase::ManuallyDefineIMM(UA_Server *server) {
@@ -272,7 +312,7 @@ UA_NodeId ServerAPIBase::ManuallyDefineIMM(UA_Server *server) {
 	UA_NodeId immId; /* get the nodeid assigned by the server */
 
 	immId = AddObject(server, UA_NODEID_NUMERIC(1, 10), "IMM");
-	AddVariableNode(server, immId, UA_NODEID_NUMERIC(1, 11) , "ManufacturerName", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
+	AddVariableNode(server, immId, UA_NODEID_NUMERIC(1, 11), "ManufacturerName", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
 	AddVariableNode(server, immId, UA_NODEID_NUMERIC(1, 12), "ModelName", UA_TYPES_STRING, UA_ACCESSLEVELMASK_READ);
 	AddVariableNode(server, immId, UA_NODEID_NUMERIC(1, 13), "MotorRPMs", UA_TYPES_DOUBLE, UA_ACCESSLEVELMASK_READ);
 	statusNodeId = AddVariableNode(server, immId, UA_NODEID_NUMERIC(1, 14), "Status", UA_TYPES_STRING, (UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE));
