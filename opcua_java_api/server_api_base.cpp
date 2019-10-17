@@ -31,8 +31,10 @@ void ServerAPIBase::dataChangeNotificationCallback(UA_Server *server, UA_UInt32 
 
 void ServerAPIBase::SetMethodOutput(UA_NodeId methodId, UA_String output)
 {
+
 	ServerAPIBase* serverApi = ServerAPIBase::Get();
 	int nodeOutputIndex = serverApi->GetNodeIdIndex(methodId);
+
 	if (nodeOutputIndex != -1) {
 		UA_Variant_setScalarCopy(serverApi->methodOutputs[nodeOutputIndex].value, &output, &UA_TYPES[UA_TYPES_STRING]);
 	}
@@ -49,9 +51,10 @@ UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	size_t outputSize, UA_Variant *output) {
 	/*
 */
-
-	UA_String *inputStr = (UA_String*)input->data;
-
+	UA_String *inputStr = &UA_STRING("-1");
+	if(UA_Variant_isScalar(input))
+		inputStr = (UA_String*)input->data;
+	
 
 	//serverApi->output = output;
 	int nodeOutputIndex = ServerAPIBase::Get()->GetNodeIdIndex(*methodId);
@@ -84,17 +87,18 @@ ServerAPIBase * ServerAPIBase::Get()
 
 bool ServerAPIBase::AddOutput(method_output output)
 {
-	if (jAPIBase_local->outputs_length != 1) {
-		method_output* temp = new method_output[jAPIBase_local->outputs_length];
-		memcpy(temp, ServerAPIBase::Get()->methodOutputs, jAPIBase_local->outputs_length * sizeof(method_output));
+	if (ServerAPIBase::Get()->outputs_length == 1) {
+		ServerAPIBase::Get()->methodOutputs = new method_output[ServerAPIBase::Get()->outputs_length];
+	}
+	else {
+		method_output* temp = new method_output[ServerAPIBase::Get()->outputs_length];
+		memcpy(temp, ServerAPIBase::Get()->methodOutputs, ServerAPIBase::Get()->outputs_length * sizeof(method_output));
 		delete[] ServerAPIBase::Get()->methodOutputs;
 		ServerAPIBase::Get()->methodOutputs = temp;
 	}
-	else {
-		jAPIBase_local->methodOutputs = new method_output[jAPIBase_local->outputs_length];
-	}
-	ServerAPIBase::Get()->methodOutputs[jAPIBase_local->outputs_length - 1] = output;
-	jAPIBase_local->outputs_length++;
+	
+	ServerAPIBase::Get()->methodOutputs[ServerAPIBase::Get()->outputs_length - 1] = output;
+	ServerAPIBase::Get()->outputs_length++;
 	return true;
 }
 
@@ -302,7 +306,6 @@ UA_NodeId ServerAPIBase::AddArrayMethod(ServerAPIBase *jAPIBase, UA_Server *serv
 	//	m_output.value = output;
 	m_output.api_local = jAPIBase;
 	ServerAPIBase::Get()->AddOutput(m_output);
-
 
 	return nodeId;
 }

@@ -53,3 +53,4 @@ opcua_java_api/opcua_java_api.vcxproj
 *.vcxproj
 *.i
 opcua_java_api/types.h
+*.idb

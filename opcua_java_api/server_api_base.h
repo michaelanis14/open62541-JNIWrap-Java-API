@@ -59,6 +59,7 @@ public:
 		const UA_NodeId *objectId, void *objectContext,
 		size_t inputSize, const UA_Variant *input,
 		size_t outputSize, UA_Variant *output);
+
 	static void dataChangeNotificationCallback(UA_Server *server, UA_UInt32 monitoredItemId,
 		void *monitoredItemContext, const UA_NodeId *nodeId,
 		void *nodeContext, UA_UInt32 attributeId,

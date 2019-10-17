@@ -2327,6 +2327,45 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1change_1owne
 }
 
 
+SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1methodInputs_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Int32 *arg2 ;
+  jint *jarr2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  if (jarg2 && jenv->GetArrayLength(jarg2) != 10) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+    return ;
+  }
+  if (!SWIG_JavaArrayInInt(jenv, &jarr2, (int **)&arg2, jarg2)) return ; 
+  {
+    size_t ii;
+    UA_Int32 *b = (UA_Int32 *) arg1->methodInputs;
+    for (ii = 0; ii < (size_t)10; ii++) b[ii] = *((UA_Int32 *) arg2 + ii);
+  }
+  SWIG_JavaArrayArgoutInt(jenv, jarr2, (int *)arg2, jarg2); 
+  delete [] arg2; 
+}
+
+
+SWIGEXPORT jintArray JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1methodInputs_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jintArray jresult = 0 ;
+  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
+  UA_Int32 *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(ClientAPIBase **)&jarg1; 
+  result = (UA_Int32 *)(UA_Int32 *) ((arg1)->methodInputs);
+  jresult = SWIG_JavaArrayOutInt(jenv, (int *)result, 10); 
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1running_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
   UA_Boolean arg2 ;
@@ -2615,7 +2654,7 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1GetMethod
 }
 
 
-SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMethod_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMethod(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   UA_NodeId arg2 ;
@@ -2665,13 +2704,14 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMetho
 }
 
 
-SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMethod_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jintArray jarg4, jint jarg5) {
+SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallArrayMethod(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jintArray jarg4, jint jarg5, jlong jarg6, jobject jarg6_) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   UA_NodeId arg2 ;
   UA_NodeId arg3 ;
   UA_Int32 *arg4 ;
   UA_Int32 arg5 ;
+  UA_Variant *arg6 = (UA_Variant *) 0 ;
   UA_NodeId const *argp2 ;
   UA_NodeId const *argp3 ;
   jint *jarr4 ;
@@ -2681,6 +2721,7 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMetho
   (void)jcls;
   (void)jarg2_;
   (void)jarg3_;
+  (void)jarg6_;
   arg1 = 0;
   if (jarg1) {
     arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
@@ -2700,7 +2741,8 @@ SWIGEXPORT jstring JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1CallMetho
   arg3 = *argp3; 
   if (!SWIG_JavaArrayInInt(jenv, &jarr4, (int **)&arg4, jarg4)) return 0; 
   arg5 = (UA_Int32)jarg5; 
-  result = ClientAPIBase::CallMethod(arg1,arg2,arg3,arg4,arg5);
+  arg6 = *(UA_Variant **)&jarg6; 
+  result = ClientAPIBase::CallArrayMethod(arg1,arg2,arg3,arg4,arg5,arg6);
   {
     char* $2 = (char*)UA_malloc(sizeof(char)*(&result)->length + 1);
     memcpy($2, (&result)->data, (&result)->length);
@@ -2886,22 +2928,6 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1methods_1cal
   }
   arg6 = *(ClientAPIBase **)&jarg6; 
   (arg1)->ClientAPIBase::methods_callback(arg2,arg3,arg4,arg5,arg6);
-}
-
-
-SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ClientAPIBase_1arrayTest(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
-  ClientAPIBase *arg1 = (ClientAPIBase *) 0 ;
-  UA_Int32 *arg2 ;
-  jint *jarr2 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(ClientAPIBase **)&jarg1; 
-  if (!SWIG_JavaArrayInInt(jenv, &jarr2, (int **)&arg2, jarg2)) return ; 
-  (arg1)->arrayTest(arg2);
-  SWIG_JavaArrayArgoutInt(jenv, jarr2, (int *)arg2, jarg2); 
-  delete [] arg2; 
 }
 
 

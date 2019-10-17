@@ -8,8 +8,7 @@ private:
 	size_t outputs_length = 1;
 	
 public:
-
-
+	UA_Int32 methodInputs[10];
 	struct method_output
 	{
 		UA_UInt32 subId;
@@ -66,15 +65,14 @@ public:
 	static UA_String CallMethod(char* serverUrl, const UA_NodeId objectId,
 			const UA_NodeId methodId, char* argInputString);
 
-	static UA_String CallMethod(char* serverUrl, const UA_NodeId objectId,
-		const UA_NodeId methodId, UA_Int32 argInput[], UA_Int32 arraySize);
+	static UA_String CallArrayMethod( char* serverUrl, const UA_NodeId objectId,
+		const UA_NodeId methodId, UA_Int32 methodInputs[], UA_Int32 arraySize, UA_Variant *output);
 
 	virtual void monitored_itemChanged(UA_NodeId nodeId, const UA_Int32 value) {}
 	virtual void client_connected(ClientAPIBase * jClientAPIBase, UA_Client *client, char* serverUrl) {}
 	virtual void methods_callback(const UA_NodeId objectId,const UA_NodeId methodId, UA_String input, UA_String output, ClientAPIBase *jAPIBase) {}
 
 
-	void  arrayTest(UA_Int32 outputArray[]);
 
 	virtual ~ClientAPIBase() {}
 };
