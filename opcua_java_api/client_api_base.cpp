@@ -164,6 +164,19 @@ UA_NodeId ClientAPIBase::GetNodeByName(UA_Client *client, char* nodeName) {
 
 UA_UInt32 ClientAPIBase::ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID)
 {
+	/* Write node attribute */
+	UA_StatusCode write_state = UA_STATUSCODE_GOOD;
+	client = UA_Client_new();
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	write_state = UA_Client_connect(client, "");
+
+	if (write_state != UA_STATUSCODE_GOOD) {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "\nConnect to %s...%x\n", "", write_state);
+		return write_state;
+	}
+
+
+	UA_Client_run_iterate(client, 0);
 	/* Create a subscription */
 	UA_CreateSubscriptionRequest request = UA_CreateSubscriptionRequest_default();
 	UA_CreateSubscriptionResponse response = UA_Client_Subscriptions_create(client, request,
@@ -205,6 +218,75 @@ UA_UInt32 ClientAPIBase::ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Clie
 	/* The first publish request should return the initial value of the variable */
 	//UA_Client_run_iterate(client, 10000);
 }
+
+UA_UInt32 ClientAPIBase::ClientSubtoNode(ClientAPIBase * jClientAPIBase, char* serverUrl,  UA_NodeId nodeID)
+{
+	/* Write node attribute */
+	UA_StatusCode write_state = UA_STATUSCODE_GOOD;
+	UA_Client *client = UA_Client_new();
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	write_state = UA_Client_connect(client, serverUrl);
+
+	if (write_state != UA_STATUSCODE_GOOD) {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "\nConnect to %s...%x\n", serverUrl, write_state);
+		return write_state;
+	}
+
+
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	write_state = UA_Client_connect(client, "");
+
+	if (write_state != UA_STATUSCODE_GOOD) {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "\nConnect to %s...%x\n", "", write_state);
+		return write_state;
+	}
+
+
+	UA_Client_run_iterate(client, 0);
+	/* Create a subscription */
+	UA_CreateSubscriptionRequest request = UA_CreateSubscriptionRequest_default();
+	UA_CreateSubscriptionResponse response = UA_Client_Subscriptions_create(client, request,
+		NULL, NULL, deleteSubscriptionCallback);
+
+	UA_UInt32 subId = response.subscriptionId;
+	if (response.responseHeader.serviceResult == UA_STATUSCODE_GOOD)
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Create subscription succeeded, id %u\n", subId);
+	else  return -1;
+
+	UA_MonitoredItemCreateRequest monRequest =
+		UA_MonitoredItemCreateRequest_default(nodeID);
+	jClientAPIBase_local = jClientAPIBase;
+	//	UA_NodeId_copy(&nodeID, &jClientAPIBase_local->current_nodeId);
+	monRequest.requestedParameters.samplingInterval = 100; /* 100 ms interval */
+	UA_MonitoredItemCreateResult monResponse =
+		UA_Client_MonitoredItems_createDataChange(client, response.subscriptionId,
+			UA_TIMESTAMPSTORETURN_BOTH,
+			monRequest, NULL, jClientAPIBase_local->handler_TheStatusChanged, NULL);
+
+	if (monResponse.statusCode == UA_STATUSCODE_GOOD) {
+
+		ClientAPIBase::method_output m_output;
+		m_output.subId = subId;
+		m_output.key = nodeID;
+		//	m_output.value = output;
+		m_output.api_local = jClientAPIBase;
+		ClientAPIBase::Get()->AddOutput(m_output);
+
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+			"Monitoring ', id %u",
+			monResponse.monitoredItemId);
+	}
+	else {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "failed to subscribe to node with error: %x\n", monResponse.statusCode);
+		return -1;
+
+	}
+//	UA_Client_delete(client);
+	return subId;
+	/* The first publish request should return the initial value of the variable */
+	//UA_Client_run_iterate(client, 10000);
+}
+
 
 UA_Variant ClientAPIBase::SetGetVariant(UA_Variant * value)
 {

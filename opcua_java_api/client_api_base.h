@@ -47,6 +47,7 @@ public:
 
 
 	static UA_UInt32 ClientSubtoNode(ClientAPIBase * jClientAPIBase, UA_Client *client, UA_NodeId nodeID);
+	static UA_UInt32 ClientSubtoNode(ClientAPIBase * jClientAPIBase, char* serverUrl, UA_NodeId nodeID);
 
 	static UA_Variant SetGetVariant(UA_Variant * value);
 
