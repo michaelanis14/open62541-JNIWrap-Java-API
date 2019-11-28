@@ -40,9 +40,14 @@ void ServerAPIBase::SetMethodOutput(UA_NodeId methodId, UA_String output)
 	}
 }
 
-UA_NodeId ServerAPIBase::CreateStringNodeId(UA_UInt16 nsIndex, char * chars)
+UA_NodeId ServerAPIBase::CreateStringNodeId(UA_UInt16 nsIndex, UA_String name)
 {
-	return UA_NODEID_STRING(nsIndex, chars);
+	char* convert = (char*)UA_malloc(sizeof(char)*name.length + 1);
+	memcpy(convert, name.data, name.length);
+	convert[name.length] = '\0';
+
+
+	return UA_NODEID_STRING(nsIndex, convert);
 }
 
 

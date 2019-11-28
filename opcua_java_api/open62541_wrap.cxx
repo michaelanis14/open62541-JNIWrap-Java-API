@@ -2198,20 +2198,18 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1SetMethodOut
 SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1CreateStringNodeId(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2) {
   jlong jresult = 0 ;
   UA_UInt16 arg1 ;
-  char *arg2 = (char *) 0 ;
+  UA_String arg2 ;
   UA_NodeId result;
   
   (void)jenv;
   (void)jcls;
   arg1 = (UA_UInt16)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
-    if (!arg2) return 0;
+  {
+    const char *nativeString = (jenv)->GetStringUTFChars(jarg2, 0);
+    arg2 = UA_STRING((char *)nativeString);
   }
   result = ServerAPIBase::CreateStringNodeId(arg1,arg2);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
-  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
   return jresult;
 }
 
