@@ -1,4 +1,4 @@
-# OPCUA Java Wrapper
+# open62541 Java Wrapper
 
 This is a JNI Wrap for a helper C class(s) over the source of open62541 to enable direct Java comunication.
 The JNI Wrap is generated using SWIG library.
