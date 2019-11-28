@@ -414,7 +414,7 @@ UA_String ClientAPIBase::CallMethod(char* serverUrl, const UA_NodeId objectId, c
 	if (client_call_state == UA_STATUSCODE_GOOD) {
 		if (UA_Variant_isEmpty(output)) {
 			UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful Empty return, and %x returned values available.\n", client_call_state);
-			goto cleaning;
+			return out;
 		}
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was successful, and %lu returned values available. %d \n",
 			(unsigned long)outputSize, output->type->typeName);
@@ -425,7 +425,7 @@ UA_String ClientAPIBase::CallMethod(char* serverUrl, const UA_NodeId objectId, c
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, and %x returned values available.\n", client_call_state);
 	}
 	UA_Client_delete(client);
-cleaning:
+//cleaning:
 	//UA_Array_delete(output, outputSize, &UA_TYPES[UA_TYPES_VARIANT]);
 	//UA_Variant_clear(&input);
 

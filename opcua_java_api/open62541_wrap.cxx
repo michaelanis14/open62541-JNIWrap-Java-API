@@ -2195,6 +2195,27 @@ SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1SetMethodOut
 }
 
 
+SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1CreateStringNodeId(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2) {
+  jlong jresult = 0 ;
+  UA_UInt16 arg1 ;
+  char *arg2 = (char *) 0 ;
+  UA_NodeId result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = (UA_UInt16)jarg1; 
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+    if (!arg2) return 0;
+  }
+  result = ServerAPIBase::CreateStringNodeId(arg1,arg2);
+  *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
+  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_open62Wrap_open62541JNI_ServerAPIBase_1monitored_1itemChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   ServerAPIBase *arg1 = (ServerAPIBase *) 0 ;
   UA_NodeId *arg2 = (UA_NodeId *) 0 ;
@@ -4492,27 +4513,6 @@ SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1NODEID_1NUMERIC(JNIEnv
   arg2 = (UA_UInt32)jarg2; 
   result = UA_NODEID_NUMERIC(arg1,arg2);
   *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_open62Wrap_open62541JNI_UA_1NODEID_1STRING(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2) {
-  jlong jresult = 0 ;
-  UA_UInt16 arg1 ;
-  char *arg2 = (char *) 0 ;
-  UA_NodeId result;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = (UA_UInt16)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
-    if (!arg2) return 0;
-  }
-  result = UA_NODEID_STRING(arg1,arg2);
-  *(UA_NodeId **)&jresult = new UA_NodeId((const UA_NodeId &)result); 
-  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
   return jresult;
 }
 

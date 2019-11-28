@@ -40,6 +40,11 @@ void ServerAPIBase::SetMethodOutput(UA_NodeId methodId, UA_String output)
 	}
 }
 
+UA_NodeId ServerAPIBase::CreateStringNodeId(UA_UInt16 nsIndex, char * chars)
+{
+	return UA_NODEID_STRING(nsIndex, chars);
+}
+
 
 
 

@@ -66,6 +66,7 @@ public:
 		const UA_DataValue *value);
 
 	static void SetMethodOutput(UA_NodeId methodId, UA_String output);
+	static UA_NodeId CreateStringNodeId(UA_UInt16 nsIndex, char *chars);
 
 	virtual void monitored_itemChanged(const UA_NodeId *nodeId, const UA_Int32 value) {}
 	virtual void methods_callback(const UA_NodeId *methodId, const UA_NodeId *objectId, UA_String input, UA_String output, ServerAPIBase *jAPIBase) {}
