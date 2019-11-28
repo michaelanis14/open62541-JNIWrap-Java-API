@@ -458,7 +458,7 @@ UA_String ClientAPIBase::CallArrayMethod(char* serverUrl, const UA_NodeId object
 
 	if (client_call_state != UA_STATUSCODE_GOOD){
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, didnt manage to connect to the server %x .\n", client_call_state);
-		goto cleaning;
+		return out;
 	}
 	
 	
@@ -467,7 +467,7 @@ UA_String ClientAPIBase::CallArrayMethod(char* serverUrl, const UA_NodeId object
 
 	if (!client && UA_NodeId_isNull(&methodId) && UA_NodeId_isNull(&objectId)) {
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful, nodeid or objectis is null.\n");
-		goto cleaning;
+		return out;
 	}
 	size_t outputSize;
 	
@@ -478,22 +478,20 @@ UA_String ClientAPIBase::CallArrayMethod(char* serverUrl, const UA_NodeId object
 		methodId, 1, &input, &outputSize, &output);
 	if (client_call_state != UA_STATUSCODE_GOOD) {
 		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was unsuccessful: %x .\n", client_call_state);
-		goto cleaning;
+		return out;
 	}
 	//UA_Client_run_iterate(client, 0);
 
 	if (client_call_state == UA_STATUSCODE_GOOD) {
 		if (UA_Variant_isEmpty(output)) {
 			UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was successful however with Empty return  %x .\n", client_call_state);	
-			goto cleaning;
+			return out;
 		}
 		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Method call was successful, and %lu returned values available. %d \n",
 			(unsigned long)outputSize, output->type->typeName);
 		UA_String *strOutput = (UA_String*)(output)->data;
 		out = *strOutput;
 	}
-	
-cleaning:
 	//UA_Client_delete(client);
 	//UA_Variant_clear(&input);
 	return out;

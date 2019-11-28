@@ -56,7 +56,8 @@ UA_StatusCode  ServerAPIBase::methodCallback(UA_Server *server,
 	size_t outputSize, UA_Variant *output) {
 	/*
 */
-	UA_String *inputStr = &UA_STRING("-1");
+	UA_String temp = UA_String_fromChars("-1");
+	UA_String *inputStr = &temp;
 	if(UA_Variant_isScalar(input))
 		inputStr = (UA_String*)input->data;
 	
