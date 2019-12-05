@@ -40835,6 +40835,7 @@ __UA_Client_readAttribute(UA_Client *client, const UA_NodeId *nodeId,
     UA_ReadRequest_init(&request);
     request.nodesToRead = &item;
     request.nodesToReadSize = 1;
+	//request.requestHeader.additionalHeader.content
     UA_ReadResponse response = UA_Client_Service_read(client, request);
     UA_StatusCode retval = response.responseHeader.serviceResult;
     if(retval == UA_STATUSCODE_GOOD) {

@@ -333,6 +333,42 @@ UA_Int32   ClientAPIBase::ClientReadIntValue(UA_Client *client, UA_NodeId nodeID
 	return value;
 }
 
+UA_Int32 ClientAPIBase::ClientReadIntValue(char * serverUrl, UA_NodeId nodeID)
+{
+	UA_StatusCode write_state = UA_STATUSCODE_GOOD;
+	UA_Client *client = UA_Client_new();
+	UA_ClientConfig_setDefault(UA_Client_getConfig(client));
+	write_state = UA_Client_connect(client, serverUrl);
+
+	if (write_state != UA_STATUSCODE_GOOD) {
+		UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "\nConnect to %s...%x\n", serverUrl, write_state);
+		return write_state;
+	}
+	UA_Client_run_iterate(client, 0);
+
+
+
+	UA_Int32 value = 0;
+	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "\nReading from Server the value of node");
+	UA_Variant *val = UA_Variant_new();
+	//    retval = UA_Client_readValueAttribute(client, UA_NODEID_STRING(1, "the.answer"), val);
+	UA_StatusCode retval = UA_Client_readValueAttribute(client, nodeID, val);
+
+
+	if (retval == UA_STATUSCODE_GOOD && UA_Variant_isScalar(val) &&
+		val->type == &UA_TYPES[UA_TYPES_INT32]) {
+		value = *(UA_Int32*)val->data;
+		UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "the value is: %i\n", value);
+	}
+	UA_Variant_delete(val);
+	
+
+
+	UA_Client_delete(client);
+
+	return value;
+}
+
 UA_StatusCode  ClientAPIBase::ClientWriteValue( char* serverUrl, UA_NodeId nodeId, UA_Int32 value) {
 	/* Write node attribute */
 	UA_StatusCode write_state = UA_STATUSCODE_GOOD;

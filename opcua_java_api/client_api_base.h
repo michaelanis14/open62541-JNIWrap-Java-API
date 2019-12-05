@@ -55,6 +55,8 @@ public:
 
 	static UA_Variant * ClientReadValue(UA_Client *client, UA_NodeId nodeID);
 	static UA_Int32   ClientReadIntValue(UA_Client *client, UA_NodeId nodeID);
+	static UA_Int32   ClientReadIntValue(char* serverUrl, UA_NodeId nodeID);
+
 	static UA_StatusCode ClientWriteValue( char* serverUrl, UA_NodeId nodeId, UA_Int32 value);
 
 	static void

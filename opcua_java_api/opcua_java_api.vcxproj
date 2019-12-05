@@ -114,7 +114,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Java\jdk1.8.0_211\include;C:\Program Files %28x86%29\Java\jdk1.8.0_211\include\win32;$(SolutionDir)\OpcUa\OpcUa_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\micha\Documents\Visual Studio 2015\Projects\opcua_java_api\OpcUa\OpcUa_include\mbedtls;C:\Program Files %28x86%29\Java\jdk1.8.0_211\include;C:\Program Files %28x86%29\Java\jdk1.8.0_211\include\win32;$(SolutionDir)\OpcUa\OpcUa_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
